@@ -14,8 +14,6 @@ private let NUM_SIDES_IN_CUBE = 6
 
 class Chunk: NSObject {
     
-
-    
     // Configuration
     let gridSpacing:Float = 2.0
     
@@ -163,6 +161,8 @@ class Chunk: NSObject {
             vertices.append(vertex)
         }
     }
+    
+    
     
 
 }

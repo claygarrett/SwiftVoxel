@@ -16,6 +16,7 @@ struct Vertex
     float4 color;
     float3 normal;
     float3 barycentricCoords;
+    bool highlighted;
     float2 uv;
 };
 
@@ -23,18 +24,10 @@ struct Vertex
 struct Uniforms
 {
     float4x4 modelViewProjectionMatrix;
-    float4x4 modelViewMatrix;
-    float4x4 modelMatrix;
 };
-
-struct PerInstanceUniforms {
-    float4x4 modelMatrix;
-};
-
 
 vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
                              constant Uniforms *uniforms [[buffer(1)]],
-                             constant PerInstanceUniforms *perInstanceUniforms [[buffer(2)]],
                              uint vid [[vertex_id]],
                              uint iid [[instance_id]])
 {
@@ -47,7 +40,7 @@ vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
     Vertex vertexOut;
     vertexOut.position = uniforms->modelViewProjectionMatrix * vertices[vid].position;
     vertexOut.normal =   vertices[vid].normal.xyz;
-    
+    vertexOut.highlighted = vertices[vid].highlighted;
     float2 uv = vertices[vid].uv;
     
     
@@ -70,13 +63,13 @@ fragment float4 fragment_flatcolor(Vertex vertexIn [[stage_in]],
     if (diffuse.a < 0.5) {
         discard_fragment();
     }
-    
-    return diffuse;
-    
-//    if(vertexIn.barycentricCoords.x < 0.1) {
-//        float4 multiplier = { 0.8, 0.8, 0.8, 1.0 };
+
+//    if(vertexIn.highlighted && vertexIn.barycentricCoords.x < 0.1) {
+//        float4 multiplier = { 0.0, 0.8, 0.0, 1.0 };
 //        return vertexIn.color * multiplier;
 //    }
+    
+    return diffuse;
     return vertexIn.color;
 }
 
