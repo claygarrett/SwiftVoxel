@@ -21,18 +21,11 @@ class World {
     }
     
     static func getBlock() -> World {
-        let world = World(width: 5, height: 10, depth: 5)
-        for _ in 0..<5 {
-            for _ in 0..<10 {
-                for _ in 0..<5 {
-                    let block = Block(visible: true, type: .grass)
-                    world.blocks.append(block)
-                }
-            }
-        }
+        let world = World(width: 1, height: 1, depth: 2)
+        let block = Block(visible: true, type: .grass)
+        world.blocks.append(block)
+        world.blocks.append(block)
 
-        
-        
         return world
     }
     
@@ -55,7 +48,7 @@ class World {
             }
         }
         
-        let numTrees = 100
+        let numTrees = 30
         for _ in 0..<numTrees {
             let rangeMin = 5
             let rangeMax = world.size.x - 5

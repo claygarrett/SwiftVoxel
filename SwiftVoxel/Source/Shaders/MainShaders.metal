@@ -15,7 +15,6 @@ struct Vertex
     float4 position [[position]];
     float4 color;
     float3 normal;
-    float3 barycentricCoords;
     bool highlighted;
     float2 uv;
 };
@@ -47,8 +46,7 @@ vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
    
     vertexOut.uv =   uv;
     vertexOut.color = (0.7 + 0.3 * float4(dotProduct, dotProduct, dotProduct, 1));// * vertices[vid].color;
-    vertexOut.barycentricCoords = vertices[vid].barycentricCoords;
-    
+
     
     return vertexOut;
 }
@@ -63,12 +61,7 @@ fragment float4 fragment_flatcolor(Vertex vertexIn [[stage_in]],
     if (diffuse.a < 0.5) {
         discard_fragment();
     }
-
-//    if(vertexIn.highlighted && vertexIn.barycentricCoords.x < 0.1) {
-//        float4 multiplier = { 0.0, 0.8, 0.0, 1.0 };
-//        return vertexIn.color * multiplier;
-//    }
-    
+ 
     return diffuse;
     return vertexIn.color;
 }

@@ -11,6 +11,8 @@
 		E908F5E021D2844A0011A48A /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5DF21D2844A0011A48A /* Renderable.swift */; };
 		E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E121D286120011A48A /* ChunkRenderable.swift */; };
 		E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E321D2AE9C0011A48A /* Vector.swift */; };
+		E908F5E621D2B2390011A48A /* SelectedCube.metal in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E521D2B2390011A48A /* SelectedCube.metal */; };
+		E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
 		E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FA021CE6D1C008A85F8 /* ViewController.swift */; };
 		E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9936FA221CE6D1C008A85F8 /* Main.storyboard */; };
@@ -25,7 +27,7 @@
 		E9936FCE21CE7D0B008A85F8 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FCD21CE7D0B008A85F8 /* Chunk.swift */; };
 		E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FCF21CE7D2D008A85F8 /* Block.swift */; };
 		E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */; };
-		E9936FD621CFC7F8008A85F8 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD521CFC7F8008A85F8 /* Shaders.metal */; };
+		E9936FD621CFC7F8008A85F8 /* MainShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD521CFC7F8008A85F8 /* MainShaders.metal */; };
 		E9936FD921CFC81D008A85F8 /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD821CFC81D008A85F8 /* TextureLoader.swift */; };
 		E9936FDB21CFD225008A85F8 /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FDA21CFD225008A85F8 /* World.swift */; };
 		E9936FDD21CFD3A3008A85F8 /* BlockUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */; };
@@ -46,6 +48,8 @@
 		E908F5DF21D2844A0011A48A /* Renderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		E908F5E121D286120011A48A /* ChunkRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkRenderable.swift; sourceTree = "<group>"; };
 		E908F5E321D2AE9C0011A48A /* Vector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
+		E908F5E521D2B2390011A48A /* SelectedCube.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SelectedCube.metal; sourceTree = "<group>"; };
+		E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockRenderable.swift; sourceTree = "<group>"; };
 		E9936F9B21CE6D1C008A85F8 /* SwiftVoxel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftVoxel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9936FA021CE6D1C008A85F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -64,7 +68,7 @@
 		E9936FCD21CE7D0B008A85F8 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
 		E9936FCF21CE7D2D008A85F8 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtilities.swift; sourceTree = "<group>"; };
-		E9936FD521CFC7F8008A85F8 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		E9936FD521CFC7F8008A85F8 /* MainShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MainShaders.metal; sourceTree = "<group>"; };
 		E9936FD821CFC81D008A85F8 /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		E9936FDA21CFD225008A85F8 /* World.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
 		E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockUtilities.swift; sourceTree = "<group>"; };
@@ -189,6 +193,7 @@
 				E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */,
 				E908F5DF21D2844A0011A48A /* Renderable.swift */,
 				E908F5E121D286120011A48A /* ChunkRenderable.swift */,
+				E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */,
 			);
 			path = Geometry;
 			sourceTree = "<group>";
@@ -205,7 +210,8 @@
 		E9936FD421CFC7E7008A85F8 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E9936FD521CFC7F8008A85F8 /* Shaders.metal */,
+				E9936FD521CFC7F8008A85F8 /* MainShaders.metal */,
+				E908F5E521D2B2390011A48A /* SelectedCube.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -320,6 +326,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */,
 				E9936FC021CE6E95008A85F8 /* MetalView.swift in Sources */,
 				E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */,
 				E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */,
@@ -329,8 +336,9 @@
 				E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */,
 				E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */,
 				E9936FCB21CE7AA4008A85F8 /* Renderer.swift in Sources */,
-				E9936FD621CFC7F8008A85F8 /* Shaders.metal in Sources */,
+				E9936FD621CFC7F8008A85F8 /* MainShaders.metal in Sources */,
 				E9936FDB21CFD225008A85F8 /* World.swift in Sources */,
+				E908F5E621D2B2390011A48A /* SelectedCube.metal in Sources */,
 				E9936FC821CE7703008A85F8 /* MetalViewDelegate.swift in Sources */,
 				E9936FD921CFC81D008A85F8 /* TextureLoader.swift in Sources */,
 				E908F5E021D2844A0011A48A /* Renderable.swift in Sources */,

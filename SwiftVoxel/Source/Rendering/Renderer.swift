@@ -12,14 +12,12 @@ struct SVVertex {
     let position:vector_float4
     let color:vector_float4
     let normal:vector_float3
-    let barycentricCoord:vector_float3
     let highlighted:Bool
     let uv:vector_float2
     
-    init(position:vector_float4, normal: vector_float3, barycentricCoord:vector_float3, uv:vector_float2) {
+    init(position:vector_float4, normal: vector_float3, uv:vector_float2) {
         self.position = position
         self.normal = normal
-        self.barycentricCoord = barycentricCoord
         self.uv = uv
         self.color = vector_float4(0, 0, 0, 1);
         self.highlighted = true
@@ -41,7 +39,7 @@ class Renderer:MetalViewDelegate {
     var projectionMatrix:matrix_float4x4!
     
     var commandQueue:MTLCommandQueue!
-    var pipeline:MTLRenderPipelineState!
+    var pipelines:[MTLRenderPipelineState] = []
     var depthStencilState:MTLDepthStencilState!
     
     let displaySemaphore:DispatchSemaphore = DispatchSemaphore(value: 3)
@@ -62,8 +60,7 @@ class Renderer:MetalViewDelegate {
         self.metalView.delegate = self
         metalDevice = MTLCreateSystemDefaultDevice()!
         
-        self.makePipeline()
-        
+        self.makePipelines()
         
         let chunkRenderable = ChunkRenderable(metalDevice: metalDevice, type: .world)
         chunkRenderable.prepare()
@@ -72,19 +69,19 @@ class Renderer:MetalViewDelegate {
         
         metalDevice = MTLCreateSystemDefaultDevice()!
         
-        let chunkRenderable2 = ChunkRenderable(metalDevice: metalDevice, type: .selectedBlock)
-        chunkRenderable2.prepare()
+        let blockRenderable = BlockRenderable(metalDevice: metalDevice)
+        blockRenderable.prepare()
         
-        chunkRenderable2.addTexturesToQueue(commandQueue: commandQueue)
+        blockRenderable.addTexturesToQueue(commandQueue: commandQueue)
         
         renderables.append(chunkRenderable)
-        renderables.append(chunkRenderable2)
+        renderables.append(blockRenderable)
         
         
     }
     
     /// Create the pipeline state to be used in rendering
-    private func makePipeline() {
+    private func makePipelines() {
         // get a new command queue from the device.
         // a command queue keeps a list of command buffers to be executed
         commandQueue = metalDevice.makeCommandQueue()
@@ -101,12 +98,37 @@ class Renderer:MetalViewDelegate {
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         
+        var pipeline:MTLRenderPipelineState!
+        
         // create our pipmeeline state from our descriptor
         do {
             try pipeline = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
         } catch  {
             print("Error: \(error)")
         }
+        
+        pipelines.append(pipeline)
+        
+        
+        
+        let vertexFunc2 = library.makeFunction(name: "vertex_project")
+        let fragmentFunc2 = library.makeFunction(name: "fragment_selected")
+        
+        // tie it all together with our pipeline descriptor
+        let pipelineDescriptor2 = MTLRenderPipelineDescriptor()
+        pipelineDescriptor2.vertexFunction = vertexFunc2
+        pipelineDescriptor2.fragmentFunction = fragmentFunc2
+        pipelineDescriptor2.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipelineDescriptor2.depthAttachmentPixelFormat = .depth32Float
+        var pipeline2:MTLRenderPipelineState!
+        // create our pipmeeline state from our descriptor
+        do {
+            try pipeline2 = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor2)
+        } catch  {
+            print("Error: \(error)")
+        }
+        
+        pipelines.append(pipeline2)
         
         // set up our depth stencil
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
@@ -140,9 +162,7 @@ class Renderer:MetalViewDelegate {
         }
         
         // get our view matrix representing our camera
-        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 80, -120])
-        
-        
+        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 20, -70])
         
         let viewProjectionMatrix = matrix_multiply(projectionMatrix, viewMatrix)
         
@@ -158,7 +178,7 @@ class Renderer:MetalViewDelegate {
             
        let passDescriptor = view.currentRenderPassDescriptor(clearDepth: i == 0)
             
-            renderable.draw(timePassed: duration, viewProjectionMatrix: viewProjectionMatrix,  renderPassDescriptor: passDescriptor, drawable: view.drawable, commandBuffer: commandBuffer, pipeline: pipeline, depthStencilState: depthStencilState, completion: {
+            renderable.draw(timePassed: duration, viewProjectionMatrix: viewProjectionMatrix,  renderPassDescriptor: passDescriptor, drawable: view.drawable, commandBuffer: commandBuffer, pipeline: pipelines[i], depthStencilState: depthStencilState, completion: {
                
             })
             

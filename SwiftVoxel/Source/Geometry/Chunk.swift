@@ -9,8 +9,8 @@
 import UIKit
 import simd
 
-let CHUNK_SIZE = 100
-private let NUM_SIDES_IN_CUBE = 6
+let CHUNK_SIZE = 30
+let NUM_SIDES_IN_CUBE = 6
 
 class Chunk: NSObject {
     
@@ -39,11 +39,6 @@ class Chunk: NSObject {
         .bottom:[0, -1, 0]
     ]
     
-    let baryX = simd_float3(x: 1, y: 0, z: 0)
-    let baryY = simd_float3(x: 0, y: 1, z: 0)
-    let baryZ = simd_float3(x: 0, y: 0, z: 1)
-    
-    let faceBarycentridCoords:[Block.Direction: [simd_float3]]
     let triangleVertPositions:[Block.Direction: [simd_float4]]
     
     // Geometry
@@ -59,15 +54,6 @@ class Chunk: NSObject {
         self.blocks = blocks
         
         self.blockSize = size
-        
-        faceBarycentridCoords = [
-                .north: [baryX, baryY, baryZ, baryZ, baryY, baryX],
-                .east: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .south: [baryZ, baryY, baryX, baryX, baryY, baryZ],
-                .west: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .top: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .bottom: [baryX, baryY, baryZ, baryX, baryY, baryZ]
-        ]
         
         triangleVertPositions = [
             .north: [rightBottomBack, leftTopBack, leftBottomBack, rightTopBack, leftTopBack, rightBottomBack],
@@ -159,7 +145,6 @@ class Chunk: NSObject {
             let vertex = SVVertex(
                 position: finalPosition,
                 normal: faceNormals[direction]!,
-                barycentricCoord: faceBarycentridCoords[direction]![i],
                 uv: uvs[direction]![i])
             
             vertices.append(vertex)

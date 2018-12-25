@@ -1,5 +1,5 @@
 //
-//  ChunkRenderable.swift
+//  BlockRenderable.swift
 //  SwiftVoxel
 //
 //  Created by Clay Garrett on 12/25/18.
@@ -9,7 +9,7 @@
 import UIKit
 import simd
 
-class ChunkRenderable: Renderable {
+class BlockRenderable: Renderable {
     
     var vertexBuffer:MTLBuffer!
     var indexBuffer:MTLBuffer!
@@ -23,35 +23,18 @@ class ChunkRenderable: Renderable {
     let rotationDampening:Float = 70.0
     var bufferIndex:NSInteger = 0
     
-    
-    // Geometry
-    var world:World!
-    var chunk:Chunk!
     var metalDevice:MTLDevice!
     
-    enum WorldType {
-        case world
-        case selectedBlock
-    }
+    var block:Block
     
     /// Initializes a renderer given a MetalView to render to
     ///
     /// - Parameter view: The view the renderer should render to
-    init(metalDevice:MTLDevice, type: WorldType) {
+    init(metalDevice:MTLDevice) {
         self.metalDevice = metalDevice
         // create our world
         
-        switch type {
-        case .selectedBlock:
-            world = World.getBlock()
-        case .world:
-            // this gives us helper methods to create geometry
-            world = World.getLandscape()
-            // chunk the blocks created by our world
-         
-        }
-        
-           chunk = Chunk(blocks: world.blocks, size: world.size)
+        block = Block(visible: true, type: .dirt)
         
         
         
@@ -64,15 +47,15 @@ class ChunkRenderable: Renderable {
         self.makeBuffers()
     }
     
-   
+    
     
     
     /// Create our initial vertex, index, and uniform buffers
     private func makeBuffers() {
-        vertexBuffer = metalDevice.makeBuffer(bytes: chunk.vertices, length: chunk.vertices.count * MemoryLayout<SVVertex>.stride, options: .cpuCacheModeWriteCombined)
+        vertexBuffer = metalDevice.makeBuffer(bytes: block.vertices, length: block.vertices.count * MemoryLayout<SVVertex>.stride, options: .cpuCacheModeWriteCombined)
         vertexBuffer.label = "Vertices"
         
-        indexBuffer = metalDevice.makeBuffer(bytes: chunk.triangles, length: MemoryLayout<SVIndex>.stride * chunk.triangles.count, options: .cpuCacheModeWriteCombined)
+        indexBuffer = metalDevice.makeBuffer(bytes: block.triangles, length: MemoryLayout<SVIndex>.stride * block.triangles.count, options: .cpuCacheModeWriteCombined)
         indexBuffer.label = "Indices"
         
         uniformBuffer = metalDevice.makeBuffer(length: MemoryLayout<SVUniforms>.stride * 3, options: .cpuCacheModeWriteCombined)
@@ -92,19 +75,19 @@ class ChunkRenderable: Renderable {
         samplerDesc.mipFilter = .linear
         samplerState = metalDevice.makeSamplerState(descriptor: samplerDesc)
     }
-
+    
     func draw(timePassed: TimeInterval, viewProjectionMatrix: matrix_float4x4, renderPassDescriptor: MTLRenderPassDescriptor, drawable: MTLDrawable, commandBuffer: MTLCommandBuffer, pipeline:MTLRenderPipelineState, depthStencilState: MTLDepthStencilState, completion: @escaping ()->()) {
         
-
+        
         rotationY += Float(timePassed) * (Float.pi / rotationDampening);
         
         let quat = MatrixUtilities.getQuaternionFromAngles(xx: 0, yy: 1, zz: 0, a: rotationY)
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)
-        
+        let translation = MatrixUtilities.matrixFloat4x4Translation(t: [0, 2, 0])
         
         // get our model matrix representing our model
         let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)
-        var modelMatrix = matrix_multiply(scale, rotation)
+        var modelMatrix = matrix_multiply(translation, rotation)
         modelMatrix = matrix_multiply(modelMatrix, rotation);
         
         // calculate our model view matrix by multiplying the 2 together
@@ -138,5 +121,5 @@ class ChunkRenderable: Renderable {
         
     }
     
-    
+
 }
