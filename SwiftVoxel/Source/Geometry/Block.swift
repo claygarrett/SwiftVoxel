@@ -18,7 +18,7 @@ class Block {
         case cloud
     }
     
-    enum Direction: Int {
+    enum Direction: Int, CaseIterable {
         case north
         case east
         case south

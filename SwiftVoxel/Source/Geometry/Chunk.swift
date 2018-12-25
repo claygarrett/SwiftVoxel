@@ -15,7 +15,7 @@ private let NUM_SIDES_IN_CUBE = 6
 class Chunk: NSObject {
     
     // Enums
-    enum TextureQuadrants {
+    enum TextureQuadrant {
         case topLeft
         case topRight
         case bottomLeft
@@ -42,6 +42,18 @@ class Chunk: NSObject {
     let bottomNormal:simd_float3 = [0, -1, 0]
     
     let directionOffsets:[Int] = [0, 0, 1, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, -1, 0 ]
+    
+    
+    
+    
+    let baryX = simd_float3(x: 1, y: 0, z: 0)
+    let baryY = simd_float3(x: 0, y: 1, z: 0)
+    let baryZ = simd_float3(x: 0, y: 0, z: 1)
+    
+    let normals: [simd_float3]
+    let faceBarycentridCoords:[Block.Direction: [simd_float3]]
+    let triangleVertPositions:[Block.Direction: [simd_float4]]
+    
 
     // Geometry
     var triangles:[SVIndex] = []
@@ -54,6 +66,26 @@ class Chunk: NSObject {
     /// - Parameter blocks: The blocks that should be chunked
     init(blocks:[Block]) {
         self.blocks = blocks
+        
+        normals = [northNormal, eastNormal, southNormal, westNormal, topNormal, bottomNormal]
+        faceBarycentridCoords = [
+                .north: [baryX, baryY, baryZ, baryZ, baryY, baryX],
+                .east: [baryX, baryY, baryZ, baryX, baryY, baryZ],
+                .south: [baryZ, baryY, baryX, baryX, baryY, baryZ],
+                .west: [baryX, baryY, baryZ, baryX, baryY, baryZ],
+                .top: [baryX, baryY, baryZ, baryX, baryY, baryZ],
+                .bottom: [baryX, baryY, baryZ, baryX, baryY, baryZ]
+        ]
+        
+        triangleVertPositions = [
+            .north: [rightBottomBack, leftTopBack, leftBottomBack, rightTopBack, leftTopBack, rightBottomBack],
+            .east: [rightTopFront, rightBottomBack, rightBottomFront, rightTopFront, rightTopBack, rightBottomBack],
+            .south: [leftBottomFront, leftTopFront, rightBottomFront, rightBottomFront, leftTopFront, rightTopFront],
+            .west: [leftTopFront, leftBottomFront, leftBottomBack, leftTopFront, leftBottomBack, leftTopBack],
+            .top: [leftTopBack, rightTopFront, leftTopFront, leftTopBack, rightTopBack, rightTopFront],
+            .bottom: [leftBottomFront, rightBottomBack, leftBottomBack, leftBottomFront, rightBottomFront, rightBottomBack]
+        ]
+        
         super.init()
         self.recalculate()
     }
@@ -110,22 +142,13 @@ class Chunk: NSObject {
        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
        let offsetArray:simd_float4 = [offset, offset, offset, 0]
         
-        for i in 0..<6 {
+        for i in 0..<NUM_SIDES_IN_CUBE {
             triangles.append(numVerts + UInt16(i))
         }
         
-        numVerts += 6
+        numVerts += UInt16(NUM_SIDES_IN_CUBE)
         
-        var quadrant:TextureQuadrants;
-        switch direction {
-        case .north, .east, .south, .west:
-            quadrant = .topLeft
-        case .top:
-            quadrant = .topRight
-        case .bottom:
-            quadrant = .bottomLeft
-        }
-        
+        let quadrant:TextureQuadrant = getTextureQuadrantForDirection(direction: direction)
         let minUvs = getUVMinsForQuadrant(quadrant: quadrant)
         
         let topLeftUV:simd_float2 = [minUvs.x, minUvs.y - 0.49];
@@ -133,97 +156,33 @@ class Chunk: NSObject {
         let bottomRightUV:simd_float2 = [minUvs.x + 0.49, minUvs.y];
         let bottomLeftUV:simd_float2 = [minUvs.x, minUvs.y];
         
-        switch direction {
-        case .north:
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
+        let uvs:[Block.Direction: [simd_float2]] = [
+            .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
+            .east: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
+            .south: [bottomLeftUV, topLeftUV, bottomRightUV, bottomRightUV, topLeftUV, topRightUV],
+            .west: [topRightUV, bottomRightUV, bottomLeftUV, topRightUV, bottomLeftUV, topLeftUV],
+            .top: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
+            .bottom: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomLeftUV]
+        ]
+        
+        for i in 0..<NUM_SIDES_IN_CUBE {
+            let triangleVertPosition = triangleVertPositions[direction]![i]
+            let finalPosition = offsetArray + triangleVertPosition + position * gridSpacing
+            let vertex = SVVertex(
+                position: finalPosition,
+                normal: normals[direction.rawValue],
+                barycentricCoord: faceBarycentridCoords[direction]![i],
+                uv: uvs[direction]![i])
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
-    
-        case .east:
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
-            
-        case .south:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 0, 1], uv: topRightUV)))
-            
-        case .west:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
-            
-        case .top:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
-            
-        case .bottom:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
-            
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(vertex)
         }
-    }
-    
-    func printVertex(_ vertex:SVVertex)->SVVertex {
-        print("Vert: \(vertex.position)")
-        return vertex
     }
     
     /// Gets the base UVs for a given texture quadrant
     ///
     /// - Parameter quadrant: The quadrant to get the UVs for
     /// - Returns: The UVs of the given quadrant
-    private func getUVMinsForQuadrant(quadrant:TextureQuadrants) ->(x:Float, y:Float) {
+    private func getUVMinsForQuadrant(quadrant:TextureQuadrant) ->(x:Float, y:Float) {
         switch quadrant {
         case .topLeft:
             return (x: 0.0, y: 0.5)
@@ -231,6 +190,21 @@ class Chunk: NSObject {
             return (x: 0.505, y: 0.495)
         case .bottomLeft, .bottomRight:
             return (x:0, y: 0)
+        }
+    }
+    
+    /// Returns which texture quadrant to use for a given face direction
+    ///
+    /// - Parameter direction: The direction of the face
+    /// - Returns: The texture quadrant that the face's texture lives in
+    private func getTextureQuadrantForDirection(direction:Block.Direction) -> TextureQuadrant {
+        switch direction {
+        case .north, .east, .south, .west:
+            return .topLeft
+        case .top:
+            return .topRight
+        case .bottom:
+            return .bottomLeft
         }
     }
  
