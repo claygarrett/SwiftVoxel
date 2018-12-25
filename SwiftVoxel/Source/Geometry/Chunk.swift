@@ -25,14 +25,6 @@ class Chunk: NSObject {
     // Configuration
     let gridSpacing:Float = 2.0
     
-    private let color1:simd_float4 = [ 0.968, 0.278, 0.231, 1]
-    private let color2:simd_float4 = [ 0.231, 0.545, 0.533, 1]
-    private let color3:simd_float4 = [ 0.949, 0.756, 0.305, 1]
-    private let color4:simd_float4 = [ 0.968, 0.505, 0.329, 1]
-    private let color5:simd_float4 = [ 0.129, 0.862, 0.182, 1]
-    private let color6:simd_float4 = [ 0.968, 0.278, 0.733, 1]
-    let colors:[simd_float4]
-    
     let rightTopBack:simd_float4 = [1.0, 1.0, 1.0, 1.0];
     let rightTopFront:simd_float4 = [1.0, 1.0, -1.0, 1.0];
     let rightBottomBack:simd_float4 = [1.0, -1.0, 1.0, 1.0];
@@ -62,7 +54,6 @@ class Chunk: NSObject {
     /// - Parameter blocks: The blocks that should be chunked
     init(blocks:[Block]) {
         self.blocks = blocks
-        self.colors = [color1, color2, color3, color4, color5, color6];
         super.init()
         self.recalculate()
     }
@@ -91,7 +82,7 @@ class Chunk: NSObject {
                         let newIndex = BlockUtilities.get1DIndexFromXYZ(x: newI, y: newJ, z: newK, chunkSize: CHUNK_SIZE)
                         
                         if(newI < 0 || newI >= CHUNK_SIZE || newJ < 0 || newJ >= CHUNK_SIZE || newK < 0 || newK >= CHUNK_SIZE) {
-                            addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!, color: colors[block.type.rawValue])
+                            addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!)
                             continue
                         }
                         
@@ -101,7 +92,7 @@ class Chunk: NSObject {
                             continue;
                         }
                         
-                        addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!, color: colors[block.type.rawValue])
+                        addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!)
                     }
                 }
             }
@@ -114,7 +105,7 @@ class Chunk: NSObject {
     ///   - position: The center position of the block who's face we're drawing
     ///   - direction: The direciton of the face we're adding
     ///   - color: The color of the face
-    func addFace(position:simd_float4, direction:Block.Direction, color:simd_float4) {
+    func addFace(position:simd_float4, direction:Block.Direction) {
         
        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
        let offsetArray:simd_float4 = [offset, offset, offset, 0]
@@ -144,82 +135,82 @@ class Chunk: NSObject {
         
         switch direction {
         case .north:
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: northNormal, barycentricCoord: [1, 0, 0], uv: bottomLeftUV)))
     
         case .east:
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: eastNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: eastNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
             
         case .south:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: southNormal, barycentricCoord: [1, 0, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 1, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, color: color, normal: southNormal, barycentricCoord: [0, 0, 1], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: southNormal, barycentricCoord: [0, 0, 1], uv: topRightUV)))
             
         case .west:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, color: color, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, color: color, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, color: color, normal: westNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, color: color, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: westNormal, barycentricCoord: [1, 0, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, color: color, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: westNormal, barycentricCoord: [0, 1, 0], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: topLeftUV)))
             
         case .top:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, color: color, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, color: color, normal: topNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, color: color, normal: topNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopFront + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, color: color, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, color: color, normal: topNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopBack + position * gridSpacing, normal: topNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, color: color, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightTopFront + position * gridSpacing, normal: northNormal, barycentricCoord: [0, 0, 1], uv: bottomRightUV)))
             
         case .bottom:
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: bottomRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + leftBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [1, 0, 0], uv: topLeftUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomFront + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 1, 0], uv: topRightUV)))
             
-            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, color: color, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
+            vertices.append(printVertex(SVVertex(position: offsetArray + rightBottomBack + position * gridSpacing, normal: bottomNormal, barycentricCoord: [0, 0, 1], uv: bottomLeftUV)))
         }
     }
     

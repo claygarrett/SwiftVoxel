@@ -19,6 +19,7 @@ struct Vertex
     float2 uv;
 };
 
+
 struct Uniforms
 {
     float4x4 modelViewProjectionMatrix;

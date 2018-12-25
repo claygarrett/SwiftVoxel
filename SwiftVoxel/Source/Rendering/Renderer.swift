@@ -14,6 +14,14 @@ struct SVVertex {
     let normal:vector_float3
     let barycentricCoord:vector_float3
     let uv:vector_float2
+    
+    init(position:vector_float4, normal: vector_float3, barycentricCoord:vector_float3, uv:vector_float2) {
+        self.position = position
+        self.normal = normal
+        self.barycentricCoord = barycentricCoord
+        self.uv = uv
+        self.color = vector_float4(0, 0, 0, 1);
+    }
 }
 
 struct SVUniforms {
