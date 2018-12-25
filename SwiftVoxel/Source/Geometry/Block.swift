@@ -85,7 +85,6 @@ class Block {
         
         
         let returnVal = (topLeft: topLeftUV, topRight: topRightUV, bottomRight: bottomRightUV, bottomLeft: bottomLeftUV)
-        print("type: \(self.type) \(returnVal)")
         return returnVal
         
         

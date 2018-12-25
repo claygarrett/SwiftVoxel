@@ -10,6 +10,7 @@
 		E907A09821CFFDE8007C4D46 /* grass.png in Resources */ = {isa = PBXBuildFile; fileRef = E907A09721CFFDE8007C4D46 /* grass.png */; };
 		E908F5E021D2844A0011A48A /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5DF21D2844A0011A48A /* Renderable.swift */; };
 		E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E121D286120011A48A /* ChunkRenderable.swift */; };
+		E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E321D2AE9C0011A48A /* Vector.swift */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
 		E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FA021CE6D1C008A85F8 /* ViewController.swift */; };
 		E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9936FA221CE6D1C008A85F8 /* Main.storyboard */; };
@@ -44,6 +45,7 @@
 		E907A09721CFFDE8007C4D46 /* grass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grass.png; sourceTree = "<group>"; };
 		E908F5DF21D2844A0011A48A /* Renderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		E908F5E121D286120011A48A /* ChunkRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkRenderable.swift; sourceTree = "<group>"; };
+		E908F5E321D2AE9C0011A48A /* Vector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
 		E9936F9B21CE6D1C008A85F8 /* SwiftVoxel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftVoxel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9936FA021CE6D1C008A85F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */,
+				E908F5E321D2AE9C0011A48A /* Vector.swift */,
 			);
 			path = Math;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */,
 				E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */,
 				E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */,
+				E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */,
 				E9936FCB21CE7AA4008A85F8 /* Renderer.swift in Sources */,
 				E9936FD621CFC7F8008A85F8 /* Shaders.metal in Sources */,
 				E9936FDB21CFD225008A85F8 /* World.swift in Sources */,
