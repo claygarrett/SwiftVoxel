@@ -66,6 +66,11 @@ fragment float4 fragment_flatcolor(Vertex vertexIn [[stage_in]],
 {
 //    return float4(vertexIn.normal.x * 0.5 + 0.5, vertexIn.normal.y * 0.5 + 0.5, vertexIn.normal.z * 0.5 + 0.5 , 1.0);
     float4 diffuse = diffuseTexture.sample(samplr, vertexIn.uv.xy) * vertexIn.color;
+    
+    if (diffuse.a < 0.5) {
+        discard_fragment();
+    }
+    
     return diffuse;
     
 //    if(vertexIn.barycentricCoords.x < 0.1) {
