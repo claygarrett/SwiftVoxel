@@ -10,9 +10,16 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    var renderer:Renderer!
+
+    @IBOutlet weak var metalView: MetalView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        renderer = Renderer(view: self.metalView)
+        
+        
     }
 
 
