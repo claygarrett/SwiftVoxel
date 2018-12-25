@@ -9,7 +9,7 @@
 import UIKit
 
 class Block {
-    enum BlockType: Int {
+    enum BlockType: Int, CaseIterable {
         case air
         case grass
         case dirt
@@ -34,4 +34,18 @@ class Block {
         self.visible = visible
         self.type = type
     }
+    
+    /// Returns the x/y uv positions of the slot this block's texture resides in
+    ///
+    /// - Returns: The uv position
+    func getTextureSlotIndex() -> (Float, Float) {
+        // our texture is a square
+        // so it is a grid of texture slots where m x m = num types
+        let index = self.type.rawValue
+        let width = Int(sqrt(Double(Block.BlockType.allCases.count)))
+        let x = Float((1/width) * (index % width))
+        let y = Float((1/width) * (index / width)) + 1.0/Float(width)
+        return (x, y)
+    }
+    
 }

@@ -25,6 +25,7 @@ class Chunk: NSObject {
     // Configuration
     let gridSpacing:Float = 2.0
     
+    // The positions of the verts of each corner of the cube
     let rightTopBack:simd_float4 = [1.0, 1.0, 1.0, 1.0];
     let rightTopFront:simd_float4 = [1.0, 1.0, -1.0, 1.0];
     let rightBottomBack:simd_float4 = [1.0, -1.0, 1.0, 1.0];
@@ -34,27 +35,23 @@ class Chunk: NSObject {
     let leftBottomBack:simd_float4 = [-1.0, -1.0, 1.0, 1.0];
     let leftBottomFront:simd_float4 = [-1.0, -1.0, -1.0, 1.0];
     
-    let northNormal:simd_float3 = [0, 0, 1]
-    let southNormal:simd_float3 = [0, 0, -1]
-    let eastNormal:simd_float3 = [1, 0, 0]
-    let westNormal:simd_float3 = [-1, 0, 0]
-    let topNormal:simd_float3 = [0, 1, 0]
-    let bottomNormal:simd_float3 = [0, -1, 0]
-    
-    let directionOffsets:[Int] = [0, 0, 1, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, 0, -1, 0 ]
-    
-    
-    
+    // The normal vector of each of the faces of the cube
+    let faceNormals:[Block.Direction: vector_float3] = [
+        .north: [0, 0, 1],
+        .east: [1, 0, 0],
+        .south: [0, 0, -1],
+        .west: [-1, 0, 0],
+        .top: [0, 1, 0],
+        .bottom:[0, -1, 0]
+    ]
     
     let baryX = simd_float3(x: 1, y: 0, z: 0)
     let baryY = simd_float3(x: 0, y: 1, z: 0)
     let baryZ = simd_float3(x: 0, y: 0, z: 1)
     
-    let normals: [simd_float3]
     let faceBarycentridCoords:[Block.Direction: [simd_float3]]
     let triangleVertPositions:[Block.Direction: [simd_float4]]
     
-
     // Geometry
     var triangles:[SVIndex] = []
     var vertices:[SVVertex] = []
@@ -67,7 +64,6 @@ class Chunk: NSObject {
     init(blocks:[Block]) {
         self.blocks = blocks
         
-        normals = [northNormal, eastNormal, southNormal, westNormal, topNormal, bottomNormal]
         faceBarycentridCoords = [
                 .north: [baryX, baryY, baryZ, baryZ, baryY, baryX],
                 .east: [baryX, baryY, baryZ, baryX, baryY, baryZ],
@@ -102,19 +98,19 @@ class Chunk: NSObject {
                         continue;
                     }
                     
-                    for x in 0..<NUM_SIDES_IN_CUBE {
-                        let xOffset = directionOffsets[x*3];
-                        let yOffset = directionOffsets[x*3 + 1];
-                        let zOffset = directionOffsets[x*3 + 2];
+                    for direction in Block.Direction.allCases {
+                        let offset = faceNormals[direction]!;
                         
-                        let newI = i + xOffset;
-                        let newJ = j + yOffset;
-                        let newK = k + zOffset;
+                        let newI = i + Int(offset.x);
+                        let newJ = j + Int(offset.y);
+                        let newK = k + Int(offset.z);
                         
                         let newIndex = BlockUtilities.get1DIndexFromXYZ(x: newI, y: newJ, z: newK, chunkSize: CHUNK_SIZE)
                         
+                        // if the neighbor block of this face is outside the bounds of this chunk, just add the face
+                        // TODO: Add checking of neighboring chunks to further optimize drawing
                         if(newI < 0 || newI >= CHUNK_SIZE || newJ < 0 || newJ >= CHUNK_SIZE || newK < 0 || newK >= CHUNK_SIZE) {
-                            addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!)
+                            addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
                             continue
                         }
                         
@@ -124,7 +120,7 @@ class Chunk: NSObject {
                             continue;
                         }
                         
-                        addFace(position: [Float(i), Float(j), Float(k), 0], direction: Block.Direction(rawValue: x)!)
+                        addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
                     }
                 }
             }
@@ -137,7 +133,7 @@ class Chunk: NSObject {
     ///   - position: The center position of the block who's face we're drawing
     ///   - direction: The direciton of the face we're adding
     ///   - color: The color of the face
-    func addFace(position:simd_float4, direction:Block.Direction) {
+    func addFace(block: Block, position:simd_float4, direction:Block.Direction) {
         
        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
        let offsetArray:simd_float4 = [offset, offset, offset, 0]
@@ -148,13 +144,13 @@ class Chunk: NSObject {
         
         numVerts += UInt16(NUM_SIDES_IN_CUBE)
         
+        let textureSlot: (x: Float, y: Float) = block.getTextureSlotIndex()
         let quadrant:TextureQuadrant = getTextureQuadrantForDirection(direction: direction)
-        let minUvs = getUVMinsForQuadrant(quadrant: quadrant)
         
-        let topLeftUV:simd_float2 = [minUvs.x, minUvs.y - 0.49];
-        let topRightUV:simd_float2 = [minUvs.x + 0.49, minUvs.y - 0.49];
-        let bottomRightUV:simd_float2 = [minUvs.x + 0.49, minUvs.y];
-        let bottomLeftUV:simd_float2 = [minUvs.x, minUvs.y];
+        let topLeftUV:simd_float2 = [textureSlot.x, textureSlot.y - 0.49];
+        let topRightUV:simd_float2 = [textureSlot.x + 0.49, textureSlot.y - 0.49];
+        let bottomRightUV:simd_float2 = [textureSlot.x + 0.49, textureSlot.y];
+        let bottomLeftUV:simd_float2 = [textureSlot.x, textureSlot.y];
         
         let uvs:[Block.Direction: [simd_float2]] = [
             .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
@@ -170,26 +166,11 @@ class Chunk: NSObject {
             let finalPosition = offsetArray + triangleVertPosition + position * gridSpacing
             let vertex = SVVertex(
                 position: finalPosition,
-                normal: normals[direction.rawValue],
+                normal: faceNormals[direction]!,
                 barycentricCoord: faceBarycentridCoords[direction]![i],
                 uv: uvs[direction]![i])
             
             vertices.append(vertex)
-        }
-    }
-    
-    /// Gets the base UVs for a given texture quadrant
-    ///
-    /// - Parameter quadrant: The quadrant to get the UVs for
-    /// - Returns: The UVs of the given quadrant
-    private func getUVMinsForQuadrant(quadrant:TextureQuadrant) ->(x:Float, y:Float) {
-        switch quadrant {
-        case .topLeft:
-            return (x: 0.0, y: 0.5)
-        case .topRight:
-            return (x: 0.505, y: 0.495)
-        case .bottomLeft, .bottomRight:
-            return (x:0, y: 0)
         }
     }
     
@@ -207,5 +188,4 @@ class Chunk: NSObject {
             return .bottomLeft
         }
     }
- 
 }
