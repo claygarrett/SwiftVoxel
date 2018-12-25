@@ -99,13 +99,11 @@ class MetalView: UIView {
         delegate?.viewIsReadyToDraw(view: self)
     }
     
-
-    
     func currentRenderPassDescriptor()->MTLRenderPassDescriptor {
         let passDescriptor = MTLRenderPassDescriptor()
         let colorAttachement = passDescriptor.colorAttachments[0]
         colorAttachement?.texture = self.drawable.texture
-        colorAttachement?.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        colorAttachement?.clearColor = MTLClearColor(red: 0, green: 0.8, blue: 1, alpha: 1)
         colorAttachement?.storeAction = .store
         colorAttachement?.loadAction = .clear
         

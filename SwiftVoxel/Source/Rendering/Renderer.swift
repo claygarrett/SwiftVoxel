@@ -14,6 +14,14 @@ struct SVVertex {
     let normal:vector_float3
     let barycentricCoord:vector_float3
     let uv:vector_float2
+    
+    init(position:vector_float4, normal: vector_float3, barycentricCoord:vector_float3, uv:vector_float2) {
+        self.position = position
+        self.normal = normal
+        self.barycentricCoord = barycentricCoord
+        self.uv = uv
+        self.color = vector_float4(0, 0, 0, 1);
+    }
 }
 
 struct SVUniforms {
@@ -106,7 +114,7 @@ class Renderer:MetalViewDelegate {
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)
         
         // get our view matrix representing our camera
-        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 10, -30])
+        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 10, -80])
         
         // get our model matrix representing our model
         let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)

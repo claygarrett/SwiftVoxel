@@ -39,7 +39,7 @@ class World {
             }
         }
         
-        let numTrees = 20
+        let numTrees = 10
         for _ in 0..<numTrees {
             let rangeMin = 5
             let rangeMax = 25
