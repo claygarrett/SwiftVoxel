@@ -114,7 +114,7 @@ class Renderer:MetalViewDelegate {
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)
         
         // get our view matrix representing our camera
-        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 10, -30])
+        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 10, -80])
         
         // get our model matrix representing our model
         let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)

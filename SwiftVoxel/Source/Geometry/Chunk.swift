@@ -14,13 +14,7 @@ private let NUM_SIDES_IN_CUBE = 6
 
 class Chunk: NSObject {
     
-    // Enums
-    enum TextureQuadrant {
-        case topLeft
-        case topRight
-        case bottomLeft
-        case bottomRight
-    }
+
     
     // Configuration
     let gridSpacing:Float = 2.0
@@ -144,14 +138,10 @@ class Chunk: NSObject {
         
         numVerts += UInt16(NUM_SIDES_IN_CUBE)
         
-        let textureSlot: (x: Float, y: Float) = block.getTextureSlotIndex()
-        let quadrant:TextureQuadrant = getTextureQuadrantForDirection(direction: direction)
+        let (topLeftUV, topRightUV, bottomRightUV, bottomLeftUV) = block.getUVCorners(forDirection: direction)
         
-        let topLeftUV:simd_float2 = [textureSlot.x, textureSlot.y - 0.49];
-        let topRightUV:simd_float2 = [textureSlot.x + 0.49, textureSlot.y - 0.49];
-        let bottomRightUV:simd_float2 = [textureSlot.x + 0.49, textureSlot.y];
-        let bottomLeftUV:simd_float2 = [textureSlot.x, textureSlot.y];
         
+
         let uvs:[Block.Direction: [simd_float2]] = [
             .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
             .east: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
@@ -174,18 +164,5 @@ class Chunk: NSObject {
         }
     }
     
-    /// Returns which texture quadrant to use for a given face direction
-    ///
-    /// - Parameter direction: The direction of the face
-    /// - Returns: The texture quadrant that the face's texture lives in
-    private func getTextureQuadrantForDirection(direction:Block.Direction) -> TextureQuadrant {
-        switch direction {
-        case .north, .east, .south, .west:
-            return .topLeft
-        case .top:
-            return .topRight
-        case .bottom:
-            return .bottomLeft
-        }
-    }
+
 }
