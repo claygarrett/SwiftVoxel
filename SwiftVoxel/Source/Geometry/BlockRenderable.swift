@@ -9,7 +9,7 @@
 import UIKit
 import simd
 
-class BlockRenderable: Renderable {
+class BlockRenderable: Renderable, ControllerHandler {
     
     var vertexBuffer:MTLBuffer!
     var indexBuffer:MTLBuffer!
@@ -20,10 +20,12 @@ class BlockRenderable: Renderable {
     var samplerState:MTLSamplerState!
     
     var rotationY:Float = 0
-    let rotationDampening:Float = 70.0
+    let rotationDampening:Float = 10.0
     var bufferIndex:NSInteger = 0
     
     var metalDevice:MTLDevice!
+    
+    var currentPosition: simd_float3
     
     var block:Block
     
@@ -35,7 +37,7 @@ class BlockRenderable: Renderable {
         // create our world
         
         block = Block(visible: true, type: .dirt)
-        
+        currentPosition = [0, 2, 0]
         
         
         
@@ -83,12 +85,11 @@ class BlockRenderable: Renderable {
         
         let quat = MatrixUtilities.getQuaternionFromAngles(xx: 0, yy: 1, zz: 0, a: rotationY)
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)
-        let translation = MatrixUtilities.matrixFloat4x4Translation(t: [0, 2, 0])
+        let translation = MatrixUtilities.matrixFloat4x4Translation(t: currentPosition)
         
         // get our model matrix representing our model
         let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)
-        var modelMatrix = matrix_multiply(translation, rotation)
-        modelMatrix = matrix_multiply(modelMatrix, rotation);
+        var modelMatrix = matrix_multiply(rotation, translation)
         
         // calculate our model view matrix by multiplying the 2 together
         let modelViewProjectionMatrix:matrix_float4x4 = matrix_multiply(viewProjectionMatrix, modelMatrix)
@@ -117,8 +118,12 @@ class BlockRenderable: Renderable {
         // do the encoding and present it
         commandEncoder.endEncoding()
         
-        
-        
+    }
+    
+    func moveTapped() {
+        currentPosition.x = currentPosition.x + 2
+//        currentPosition.y = currentPosition.y + 2
+        currentPosition.z = currentPosition.z + 2
     }
     
 

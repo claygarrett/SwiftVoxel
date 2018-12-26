@@ -20,7 +20,7 @@ class ChunkRenderable: Renderable {
     var samplerState:MTLSamplerState!
     
     var rotationY:Float = 0
-    let rotationDampening:Float = 70.0
+    let rotationDampening:Float = 10.0
     var bufferIndex:NSInteger = 0
     
     
@@ -105,7 +105,6 @@ class ChunkRenderable: Renderable {
         // get our model matrix representing our model
         let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)
         var modelMatrix = matrix_multiply(scale, rotation)
-        modelMatrix = matrix_multiply(modelMatrix, rotation);
         
         // calculate our model view matrix by multiplying the 2 together
         let modelViewProjectionMatrix:matrix_float4x4 = matrix_multiply(viewProjectionMatrix, modelMatrix)

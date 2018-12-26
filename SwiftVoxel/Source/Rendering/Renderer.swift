@@ -50,7 +50,7 @@ class Renderer:MetalViewDelegate {
     // Views & State
     let metalView:MetalView!
     var timePassed:TimeInterval = 0
-    
+    var handlers:[ControllerHandler] = []
     
     /// Initializes a renderer given a MetalView to render to
     ///
@@ -70,6 +70,7 @@ class Renderer:MetalViewDelegate {
         metalDevice = MTLCreateSystemDefaultDevice()!
         
         let blockRenderable = BlockRenderable(metalDevice: metalDevice)
+        handlers.append(blockRenderable)
         blockRenderable.prepare()
         
         blockRenderable.addTexturesToQueue(commandQueue: commandQueue)
@@ -208,8 +209,11 @@ class Renderer:MetalViewDelegate {
         
         
         self.updateUniformsForView(view: view, duration: view.frameDuration)
-        
-        
-        
+    }
+    
+    func moveBox() {
+        for handler in handlers {
+            handler.moveTapped()
+        }
     }
 }
