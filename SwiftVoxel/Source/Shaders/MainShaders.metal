@@ -17,12 +17,16 @@ struct Vertex
     float3 normal;
     bool highlighted;
     float2 uv;
+    float3 shadow_coord;
 };
 
 
 struct Uniforms
 {
     float4x4 modelViewProjectionMatrix;
+    float4x4 shadow_mvp_matrix;
+    float4x4 shadow_mvp_xform_matrix;
+    
 };
 
 vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
@@ -30,13 +34,14 @@ vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
                              uint vid [[vertex_id]],
                              uint iid [[instance_id]])
 {
-    float4 sunDirection = { -1, 0, 0.4, 1} ;
+    float4 sunDirection = { -1, -1, 1, 1} ;
     
     float dotProduct = dot(normalize(vertices[vid].normal), normalize(-sunDirection.xyz));
     
     
     
     Vertex vertexOut;
+    vertexOut.shadow_coord = (uniforms->shadow_mvp_xform_matrix * vertices[vid].position ).xyz;
     vertexOut.position = uniforms->modelViewProjectionMatrix * vertices[vid].position;
     vertexOut.normal =   vertices[vid].normal.xyz;
     vertexOut.highlighted = vertices[vid].highlighted;
@@ -45,7 +50,8 @@ vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
     
    
     vertexOut.uv =   uv;
-    vertexOut.color = (0.7 + 0.3 * float4(dotProduct, dotProduct, dotProduct, 1));// * vertices[vid].color;
+    vertexOut.color = (0.7 + 0.3 * float4(dotProduct, dotProduct, dotProduct, 1));
+    //vertexOut.color = vertices[vid].color;
 
     
     return vertexOut;
@@ -53,16 +59,32 @@ vertex Vertex vertex_project(device Vertex *vertices[[buffer(0)]],
 
 fragment float4 fragment_flatcolor(Vertex vertexIn [[stage_in]],
                                    texture2d<float> diffuseTexture [[texture(0)]],
-                                   sampler samplr [[sampler(0)]])
+                                   depth2d<float> shadowTexture [[texture(1)]],
+                                   sampler albedoSampler [[sampler(0)]],
+                                   sampler depthSampler [[sampler(1)]])
 {
 //    return float4(vertexIn.normal.x * 0.5 + 0.5, vertexIn.normal.y * 0.5 + 0.5, vertexIn.normal.z * 0.5 + 0.5 , 1.0);
-    float4 diffuse = diffuseTexture.sample(samplr, vertexIn.uv.xy) * vertexIn.color;
+    float4 diffuse = diffuseTexture.sample(albedoSampler, vertexIn.uv.xy) * vertexIn.color; // * vertexIn.color;
+    
+    constexpr sampler shadowSampler(coord::normalized,
+                                    filter::linear,
+                                    mip_filter::none,
+                                    address::clamp_to_edge,
+                                    compare_func::less);
+    
+    // Compare the depth value in the shadow map to the depth value of the fragment in the sun's.
+    // frame of reference.  If the sample is occluded, it will be zero.
+    
+    
+    float shadow_sample = shadowTexture.sample_compare(shadowSampler, vertexIn.shadow_coord.xy, vertexIn.shadow_coord.z);
+    
+    
     
     if (diffuse.a < 0.5) {
-        discard_fragment();
+       //discard_fragment();
     }
  
-    return diffuse;
+    return float4(diffuse.xyz * (0.7 + shadow_sample * 0.3) , 1); //
     return vertexIn.color;
 }
 

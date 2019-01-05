@@ -48,7 +48,7 @@ class World {
             }
         }
         
-        let numTrees = 30
+        let numTrees = 50
         for _ in 0..<numTrees {
             let rangeMin = 5
             let rangeMax = world.size.x - 5

@@ -14,42 +14,64 @@ struct SVVertex {
     let normal:vector_float3
     let highlighted:Bool
     let uv:vector_float2
+    let shadow_coord:vector_float3
     
     init(position:vector_float4, normal: vector_float3, uv:vector_float2) {
         self.position = position
         self.normal = normal
         self.uv = uv
-        self.color = vector_float4(0, 0, 0, 1);
+        self.color = vector_float4(0, 0, 0, 1)
+        self.shadow_coord = vector_float3(0, 0, 0)
         self.highlighted = true
     }
 }
 
 struct SVUniforms {
     var modelViewProjectionMatrix:matrix_float4x4
+    var shadow_mvp_matrix:matrix_float4x4
+    var shadow_mvp_xform_matrix:matrix_float4x4
 }
+
+
+
 
 import UIKit
 import simd
 class Renderer:MetalViewDelegate {
-    
    
-    var metalDevice:MTLDevice!
+    // children
     var renderables:[Renderable] = []
     
-    var projectionMatrix:matrix_float4x4!
-    
+    // rendering/meetal
     var commandQueue:MTLCommandQueue!
     var pipelines:[MTLRenderPipelineState] = []
     var depthStencilState:MTLDepthStencilState!
+    var shadowDepthStencilState:MTLDepthStencilState!
+    var shadowMapTexture:MTLTexture!
+    var pipeline:MTLRenderPipelineState!
+    var metalDevice:MTLDevice!
     
+    // thrading
     let displaySemaphore:DispatchSemaphore = DispatchSemaphore(value: 3)
-    
     var bufferIndex:NSInteger = 0
     let inFlightBufferCount:NSInteger = 3
     
-    // Views & State
+    // shadows
+    var shadowRenderPassDescriptor: MTLRenderPassDescriptor!
+    var shadowMvpMatrix:matrix_float4x4!
+    var shadowMvpXformMatrix: matrix_float4x4!
+    var shadowGenPipelineState:MTLRenderPipelineState!
+    var shadowSamplerState: MTLSamplerState?
+    
+    // view/state
     let metalView:MetalView!
-    var timePassed:TimeInterval = 0
+    let cameraDistance:Float = 150.0
+    var timePassed:Float = 0
+    var rotationY:Float = 0
+    let rotationDampening:Float = 5.0
+    var mainCameraProjectionMatrix:matrix_float4x4!
+    
+    // ui/event
     var handlers:[ControllerHandler] = []
     
     /// Initializes a renderer given a MetalView to render to
@@ -60,25 +82,31 @@ class Renderer:MetalViewDelegate {
         self.metalView.delegate = self
         metalDevice = MTLCreateSystemDefaultDevice()!
         
-        self.makePipelines()
+        makePipelines()
         
-        let chunkRenderable = ChunkRenderable(metalDevice: metalDevice, type: .world)
+        initShadowSampler()
+        
+        let chunkRenderable = ChunkRenderable(metalDevice: metalDevice)
         chunkRenderable.prepare()
-        
         chunkRenderable.addTexturesToQueue(commandQueue: commandQueue)
-        
-        metalDevice = MTLCreateSystemDefaultDevice()!
+        renderables.append(chunkRenderable)
         
         let blockRenderable = BlockRenderable(metalDevice: metalDevice)
         handlers.append(blockRenderable)
         blockRenderable.prepare()
-        
         blockRenderable.addTexturesToQueue(commandQueue: commandQueue)
-        
-        renderables.append(chunkRenderable)
         renderables.append(blockRenderable)
-        
-        
+    }
+    
+    /// Creats the sampler descriptor for the shadow pass and stores it in a local variable
+    private func initShadowSampler() {
+        let shadowSamplerDesc = MTLSamplerDescriptor()
+        shadowSamplerDesc.sAddressMode = .clampToEdge
+        shadowSamplerDesc.tAddressMode = .clampToEdge
+        shadowSamplerDesc.minFilter = .linear
+        shadowSamplerDesc.magFilter = .linear
+        shadowSamplerDesc.mipFilter = .linear
+        shadowSamplerState = metalDevice.makeSamplerState(descriptor: shadowSamplerDesc)
     }
     
     /// Create the pipeline state to be used in rendering
@@ -92,6 +120,15 @@ class Renderer:MetalViewDelegate {
         let vertexFunc = library.makeFunction(name: "vertex_project")
         let fragmentFunc = library.makeFunction(name: "fragment_flatcolor")
         
+        let shadowVertexFunction = library.makeFunction(name: "shadow_vertex")
+        
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.label = "Shadow Gen"
+        renderPipelineDescriptor.vertexDescriptor = nil
+        renderPipelineDescriptor.vertexFunction = shadowVertexFunction
+        renderPipelineDescriptor.fragmentFunction = nil
+        renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        
         // tie it all together with our pipeline descriptor
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunc
@@ -99,37 +136,33 @@ class Renderer:MetalViewDelegate {
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         
-        var pipeline:MTLRenderPipelineState!
+        // Create depth state for shadow pass
+        let shadowDepthStateDescription = MTLDepthStencilDescriptor()
+        shadowDepthStateDescription.label = "Shadow Gen Depth"
+        shadowDepthStateDescription.depthCompareFunction = .lessEqual
+        shadowDepthStateDescription.isDepthWriteEnabled = true
+        shadowDepthStencilState = metalDevice.makeDepthStencilState(descriptor: shadowDepthStateDescription)!
+        
+        // Create depth texture for shadow pass
+        let shadowTextureDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: 1125, height: 1941, mipmapped: false)
+        
+        shadowTextureDesc.resourceOptions = .storageModePrivate
+        shadowTextureDesc.usage = [.renderTarget, .shaderRead]
+        
+        shadowMapTexture = metalDevice.makeTexture(descriptor: shadowTextureDesc)
+        shadowMapTexture.label = "Shadow Map Texture"
         
         // create our pipmeeline state from our descriptor
         do {
             try pipeline = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
+            try shadowGenPipelineState = metalDevice.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+            
         } catch  {
             print("Error: \(error)")
         }
         
         pipelines.append(pipeline)
-        
-        
-        
-        let vertexFunc2 = library.makeFunction(name: "vertex_project")
-        let fragmentFunc2 = library.makeFunction(name: "fragment_selected")
-        
-        // tie it all together with our pipeline descriptor
-        let pipelineDescriptor2 = MTLRenderPipelineDescriptor()
-        pipelineDescriptor2.vertexFunction = vertexFunc2
-        pipelineDescriptor2.fragmentFunction = fragmentFunc2
-        pipelineDescriptor2.colorAttachments[0].pixelFormat = .bgra8Unorm
-        pipelineDescriptor2.depthAttachmentPixelFormat = .depth32Float
-        var pipeline2:MTLRenderPipelineState!
-        // create our pipmeeline state from our descriptor
-        do {
-            try pipeline2 = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor2)
-        } catch  {
-            print("Error: \(error)")
-        }
-        
-        pipelines.append(pipeline2)
+        pipelines.append(shadowGenPipelineState)
         
         // set up our depth stencil
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
@@ -139,54 +172,210 @@ class Renderer:MetalViewDelegate {
         depthStencilState = metalDevice.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }
     
-    private func createProjectionMatrix(size:CGSize) {
+    /// Creates and returns a pass descriptor for the shadow pass, with the appropriate load action specified
+    ///
+    /// - Parameter overwrite: Whether to overwrite or load the depth attachment for this pass
+    /// - Returns: The pass descriptor
+    func getShadowPassDescriptor(overwrite: Bool) -> MTLRenderPassDescriptor {
+        let shadowRenderPassDescriptor = MTLRenderPassDescriptor()
+        shadowRenderPassDescriptor.depthAttachment.texture = shadowMapTexture
+        shadowRenderPassDescriptor.depthAttachment.loadAction = overwrite ? .clear : .load
+        shadowRenderPassDescriptor.depthAttachment.storeAction = .store
+        shadowRenderPassDescriptor.depthAttachment.clearDepth = 1.0
+        return shadowRenderPassDescriptor
+    }
+    
+    /// Creates the projection matrix for the main camera
+    ///
+    /// - Parameter size: The size of the texture
+    private func createMainCameraProjectionMatrix(size:CGSize) {
         // create our projection matrix
         let aspect = Float(size.width / size.height)
         let fov = Float((2 * Double.pi) / 5)
-        let near:Float = 0.1
-        let far:Float = 1000
-        projectionMatrix = MatrixUtilities.matrixFloat4x4Perspective(aspect: aspect, fovy: fov, near: near, far: far)
+        let near:Float = 1.0
+        let far:Float = cameraDistance * 2.1
+        mainCameraProjectionMatrix = MatrixUtilities.matrixFloat4x4Perspective(aspect: aspect, fovy: fov, near: near, far: far)
     }
-  
     
-    /// Updates the uniform buffer with the latest transformation data
+    /// Uses the given model matrix to create an MVP matrix from the
+    // suns point of view of the renderable that the view matrix belongs to
+    ///
+    /// - Parameter modelMatrix: the model matrix of the renderable the sun is pointing at
+    func updateSunMatrices(modelMatrix:matrix_float4x4) {
+        let directionalLightUpVector:vector_float3 = [0.0, 1.0, 0.0];
+        
+        // Update sun direction in view space
+        let sunModelPosition:vector_float4 = [2, 2, 2, 0.0]
+        
+        let sunWorldDirection:vector_float4 = -sunModelPosition;
+        let sunWorldDirectionXYZ:vector_float3 = [sunWorldDirection.x, sunWorldDirection.y, sunWorldDirection.z]
+        var shadowViewMatrix:matrix_float4x4 = matrix_look_at_right_hand(sunWorldDirectionXYZ,
+                                                                        vector_float3(0, 0, 0),
+                                                                        directionalLightUpVector);
+        
+        shadowViewMatrix = matrix_multiply(shadowViewMatrix, modelMatrix)
+   
+        // TODO: Make this dyanmic based on phone resolution
+        let aspectRatio:Float = 9.0 / 16.0
+        
+        // this is temporary while we're just spinning around the scene
+        // but we need to determine the size of our ortho shadow box
+        // such that it fully encompasses our scene from the angle we're viewing at
+        let orthoBoxWidth = Float(CHUNK_SIZE) * 2
+        
+        let shadowProjectionMatrix = matrix_ortho_left_hand(-orthoBoxWidth, orthoBoxWidth, -orthoBoxWidth / aspectRatio, orthoBoxWidth / aspectRatio, -orthoBoxWidth, orthoBoxWidth);
+        
+        // When calculating texture coordinates to sample from shadow map, flip the y/t coordinate and
+        // convert from the [-1, 1] range of clip coordinates to [0, 1] range of
+        // used for texture sampling
+        let shadowScale = matrix4x4_scale(0.5, -0.5, 1.0);
+        let shadowTranslate = matrix4x4_translation(0.5, 0.5, 0);
+        let shadowTransform = matrix_multiply(shadowTranslate, shadowScale);
+        shadowMvpMatrix = matrix_multiply(shadowProjectionMatrix, shadowViewMatrix)
+        shadowMvpXformMatrix = matrix_multiply(shadowTransform, shadowMvpMatrix)
+    }
+    
+    // TODO: Remove mainCameraViewProjectionMatrix as a dependency
+    /// Renders the shadow pass for each renderable
     ///
     /// - Parameters:
-    ///   - view: The view we're updating the buffer for. It has the size information we need for our projection matrix
-    ///   - duration: The amount of time passed since the last draw
-    private func updateUniformsForView(view: MetalView, duration: TimeInterval) {
+    ///   - mainCameraViewProjectionMatrix: the mvp of the main camera
+    ///   - uniformBufferOffset: The offset of the uniform buffer
+    ///   - commandBuffer: The command buffer to perform the work on
+    fileprivate func renderShadowPasses(mainCameraViewProjectionMatrix: simd_float4x4, uniformBufferOffset: Int, commandBuffer: MTLCommandBuffer) {
+        // update and shadow pass
+        
+        for (i, renderable) in renderables.enumerated() {
+            
+            shadowRenderPassDescriptor = getShadowPassDescriptor(overwrite: i == 0)
+            
+            updateSunMatrices(modelMatrix: renderable.modelMatrix)
+            
+            // calculate our model/view/projection matrix by multiplying the 2 we have
+            let modelViewProjectionMatrix:matrix_float4x4 = matrix_multiply(mainCameraViewProjectionMatrix, renderable.modelMatrix)
+            
+            // create and upload our uniforms
+            var uniforms:SVUniforms = SVUniforms(modelViewProjectionMatrix: modelViewProjectionMatrix, shadow_mvp_matrix: shadowMvpMatrix, shadow_mvp_xform_matrix: shadowMvpXformMatrix);
+            let contents = renderable.uniformBuffer.contents()
+            memcpy(contents + uniformBufferOffset, &uniforms, MemoryLayout.size(ofValue: uniforms))
+            
+            // create our command encoder and add our buffers to it
+            let shadowEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadowRenderPassDescriptor)!
+            shadowEncoder.label = "Shadow Map Encoder"
+            shadowEncoder.setRenderPipelineState(shadowGenPipelineState)
+            shadowEncoder.setDepthStencilState(shadowDepthStencilState)
+            shadowEncoder.setCullMode(.back)
+            shadowEncoder.setDepthBias(0.015, slopeScale: 7, clamp: 0.02)
+            shadowEncoder.setVertexBuffer(renderable.vertexBuffer, offset: 0, index: 0)
+            shadowEncoder.setVertexBuffer(renderable.uniformBuffer, offset: uniformBufferOffset, index: 1)
+            
+            // draw our geometry
+            shadowEncoder.drawIndexedPrimitives(type: .triangle, indexCount: renderable.indexBuffer.length / MemoryLayout<SVIndex>.size, indexType: .uint32, indexBuffer: renderable.indexBuffer, indexBufferOffset: 0)
+            
+            // do the encoding
+            shadowEncoder.endEncoding()
+        }
+    }
+    
+    /// Renders the main pass for each renderable
+    ///
+    /// - Parameters:
+    ///   - view: The view we're rendering into
+    ///   - commandBuffer: The command buffer to perofrm the work on
+    ///   - uniformBufferOffset: The offset of the uniform buffer
+    fileprivate func renderMainPasses(view: MetalView, commandBuffer: MTLCommandBuffer, uniformBufferOffset: Int) {
+        
+        for (i, renderable) in renderables.enumerated() {
+            
+            // get a pass descriptor appropriate for this index
+            // first index pass descriptors clear our buffer
+            // while subsequent ones load data from the previous pass
+            let passDescriptor = view.currentRenderPassDescriptor(clearDepth: i == 0)
+            
+            // create our command encoder and add our buffers and textures to it
+            let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor)!
+            commandEncoder.setRenderPipelineState(pipeline)
+            commandEncoder.setVertexBuffer(renderable.vertexBuffer, offset: 0, index: 0)
+            commandEncoder.setVertexBuffer(renderable.uniformBuffer, offset: uniformBufferOffset, index: 1)
+            commandEncoder.setFragmentSamplerState(renderable.samplerState, index: 0)
+            commandEncoder.setDepthStencilState(depthStencilState)
+            commandEncoder.setFrontFacing(.counterClockwise)
+            commandEncoder.setCullMode(.none)
+            
+            if let diffuseTexture = renderable.diffuseTexture {
+                commandEncoder.setFragmentTexture(diffuseTexture, index: 0)
+            }
+
+            // add our shadow texture and sampler state
+            // TODO: I think we're creating our sampler state in the shader, so we need to remove that part
+            commandEncoder.setFragmentTexture(shadowRenderPassDescriptor.depthAttachment.texture!, index: 1)
+            if let shadowSamplerState = self.shadowSamplerState {
+                commandEncoder.setFragmentSamplerState(shadowSamplerState, index: 1)
+            }
+            
+            // draw our geometry
+            commandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: renderable.indexBuffer.length / MemoryLayout<SVIndex>.size, indexType: .uint32, indexBuffer: renderable.indexBuffer, indexBufferOffset: 0)
+            
+            // do the encoding
+            commandEncoder.endEncoding()
+        }
+    }
+    
+    /// Loops through renderables and renders the shadow pass and main pass for each. Prepares all necessary camera
+    /// data for both passes.
+    ///
+    /// - Parameters:
+    ///   - view: The view we're drawing into.
+    ///   - duration: The amount of time passed since the last render
+    private func render(view: MetalView, duration: TimeInterval) {
         
         let _  = displaySemaphore.wait(timeout: .distantFuture)
         
-        if(projectionMatrix == nil) {
-            createProjectionMatrix(size:  view.metalLayer.drawableSize)
+        if(mainCameraProjectionMatrix == nil) {
+            createMainCameraProjectionMatrix(size:  view.metalLayer.drawableSize)
         }
         
-        // get our view matrix representing our camera
-        let viewMatrix = MatrixUtilities.matrixFloat4x4Translation(t: [0, 20, -70])
+        timePassed += Float(duration)
+        rotationY += Float(duration) * (Float.pi / rotationDampening);
         
-        let viewProjectionMatrix = matrix_multiply(projectionMatrix, viewMatrix)
+        let cameraHeight = Float(sin(timePassed / 5) * 50)
+        let directionalCameraUpVector:vector_float3 = [0.0, 1.0, 0.0];
         
-        var i = 0
+        // spin the camera around the center of the scene at a given radius r:
+        // what is the point on the circle of radius r at angle Θ?
+        // we know length of the hypoteneus made by sides x and y with angle Θ (it's r)
+        // we need to find y (opposite) and x (adjacent)
+        // we can find y by sin(Θ) = y/r, y = r•sin(Θ)
+        // we can find x by cos(Θ) = x/r, x = r•cos(Θ)
+        let x = sin(rotationY) * cameraDistance
+        let y = cos(rotationY) * cameraDistance
+        
+        let mainCameraViewMatrix:matrix_float4x4 = matrix_look_at_right_hand(vector_float3(x, cameraHeight, y),
+                                                                         vector_float3(0, 0, 0),
+                                                                         directionalCameraUpVector);
+        
+        let mainCameraViewProjectionMatrix = matrix_multiply(mainCameraProjectionMatrix, mainCameraViewMatrix)
         
         // do the heavy lifting of creating a command buffer and command encoder
         let commandBuffer = commandQueue.makeCommandBuffer()!
+        let uniformBufferOffset:Int = MemoryLayout<SVUniforms>.stride * bufferIndex
         
-        
-        
-        for var renderable in renderables {
-            renderable.bufferIndex = self.bufferIndex
-            
-       let passDescriptor = view.currentRenderPassDescriptor(clearDepth: i == 0)
-            
-            renderable.draw(timePassed: duration, viewProjectionMatrix: viewProjectionMatrix,  renderPassDescriptor: passDescriptor, drawable: view.drawable, commandBuffer: commandBuffer, pipeline: pipelines[i], depthStencilState: depthStencilState, completion: {
-               
-            })
-            
-            i += 1
-            
-           
+        // update the renderables models
+        renderables.forEach { (renderable) in
+            renderable.update(timePassed: duration)
         }
+        
+        // draw the shadow and main passes for each renderable
+        // these both loop through the renderables
+        renderShadowPasses(
+            mainCameraViewProjectionMatrix: mainCameraViewProjectionMatrix,
+            uniformBufferOffset: uniformBufferOffset,
+            commandBuffer: commandBuffer)
+        
+        renderMainPasses(
+            view: view,
+            commandBuffer: commandBuffer,
+            uniformBufferOffset: uniformBufferOffset)
         
         commandBuffer.present(view.drawable)
         
@@ -198,19 +387,18 @@ class Renderer:MetalViewDelegate {
         
         // finalize
         commandBuffer.commit()
-        
     }
-      
+    
     /// Delegate method for MetalView, called when the view is ready to be drawn to
     ///
     /// - Parameter view: The metal view that's ready for drawing
     func viewIsReadyToDraw(view: MetalView) {
         // wait until our resources are free
         
-        
-        self.updateUniformsForView(view: view, duration: view.frameDuration)
+        self.render(view: view, duration: view.frameDuration)
     }
     
+    /// Temporary. Moves our box on the screen
     func moveBox() {
         for handler in handlers {
             handler.moveTapped()

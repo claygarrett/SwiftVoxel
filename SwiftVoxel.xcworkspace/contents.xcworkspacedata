@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:AAPLMathUtilities.h">
+   </FileRef>
+   <FileRef
+      location = "group:AAPLMathUtilities.m">
+   </FileRef>
+   <FileRef
       location = "group:SwiftVoxel.xcodeproj">
    </FileRef>
    <FileRef

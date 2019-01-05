@@ -12,9 +12,20 @@ import simd
 
 protocol Renderable {
     
-    var bufferIndex:NSInteger { get set }
+    var modelMatrix:matrix_float4x4! { get set }
+    var renderShadows:Bool { get set }
+    var vertexBuffer:MTLBuffer! { get }
+    var indexBuffer:MTLBuffer! { get }
+    var uniformBuffer:MTLBuffer! { get }
+    var diffuseTexture:MTLTexture? { get }
+    var samplerState:MTLSamplerState? { get }
     
+    /// Called once to do initial setup such as buffer creation
     func prepare()
-    func draw(timePassed: TimeInterval, viewProjectionMatrix: matrix_float4x4, renderPassDescriptor: MTLRenderPassDescriptor, drawable: MTLDrawable, commandBuffer: MTLCommandBuffer, pipeline:MTLRenderPipelineState, depthStencilState: MTLDepthStencilState, completion: @escaping ()->())
     
+    
+    /// Called per frame to allow renderables to update their model matrices
+    ///
+    /// - Parameter timePassed: The amount of time passed ssince the last update
+    func update(timePassed: TimeInterval)
 }

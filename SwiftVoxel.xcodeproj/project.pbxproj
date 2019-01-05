@@ -15,6 +15,8 @@
 		E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */; };
 		E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EA21D2B9680011A48A /* ControllerHandler.swift */; };
 		E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EC21D2E6540011A48A /* ViewModel.swift */; };
+		E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */; };
+		E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E990082621D6ED8A001BD506 /* ShadowShaders.metal */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
 		E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FA021CE6D1C008A85F8 /* ViewController.swift */; };
 		E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9936FA221CE6D1C008A85F8 /* Main.storyboard */; };
@@ -58,6 +60,12 @@
 		E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockRenderable.swift; sourceTree = "<group>"; };
 		E908F5EA21D2B9680011A48A /* ControllerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHandler.swift; sourceTree = "<group>"; };
 		E908F5EC21D2E6540011A48A /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftVoxel-Bridging-Header.h"; sourceTree = "<group>"; };
+		E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLMathUtilities.m; sourceTree = "<group>"; };
+		E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMathUtilities.h; sourceTree = "<group>"; };
+		E990082621D6ED8A001BD506 /* ShadowShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShadowShaders.metal; sourceTree = "<group>"; };
+		E990082821D6EDC7001BD506 /* AAPLShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAPLShaderTypes.h; sourceTree = "<group>"; };
+		E990082921D6EDF7001BD506 /* AAPLConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAPLConfig.h; sourceTree = "<group>"; };
 		E9936F9B21CE6D1C008A85F8 /* SwiftVoxel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftVoxel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9936FA021CE6D1C008A85F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -176,6 +184,8 @@
 		E9936FBE21CE6E80008A85F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */,
+				E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */,
 				E908F5E921D2B94B0011A48A /* Handlers */,
 				E9936FD721CFC80C008A85F8 /* Textures */,
 				E9936FD421CFC7E7008A85F8 /* Shaders */,
@@ -233,6 +243,7 @@
 			children = (
 				E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */,
 				E908F5E321D2AE9C0011A48A /* Vector.swift */,
+				E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */,
 			);
 			path = Math;
 			sourceTree = "<group>";
@@ -242,6 +253,9 @@
 			children = (
 				E9936FD521CFC7F8008A85F8 /* MainShaders.metal */,
 				E908F5E521D2B2390011A48A /* SelectedCube.metal */,
+				E990082621D6ED8A001BD506 /* ShadowShaders.metal */,
+				E990082821D6EDC7001BD506 /* AAPLShaderTypes.h */,
+				E990082921D6EDF7001BD506 /* AAPLConfig.h */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -306,6 +320,7 @@
 				TargetAttributes = {
 					E9936F9A21CE6D1C008A85F8 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
 					};
 					E9936FAE21CE6D1D008A85F8 = {
 						CreatedOnToolsVersion = 10.1;
@@ -415,12 +430,14 @@
 				E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */,
 				E9936FDD21CFD3A3008A85F8 /* BlockUtilities.swift in Sources */,
 				E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */,
+				E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */,
 				E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */,
 				E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */,
 				E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */,
 				E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */,
 				E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */,
 				E9936FCB21CE7AA4008A85F8 /* Renderer.swift in Sources */,
+				E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */,
 				E9936FD621CFC7F8008A85F8 /* MainShaders.metal in Sources */,
 				E9936FDB21CFD225008A85F8 /* World.swift in Sources */,
 				E908F5E621D2B2390011A48A /* SelectedCube.metal in Sources */,
@@ -590,6 +607,7 @@
 			baseConfigurationReference = D861970115649C9D83EDF8A5 /* Pods-SwiftVoxel.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y76S6B6ZNR;
 				INFOPLIST_FILE = SwiftVoxel/Info.plist;
@@ -600,6 +618,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.claygarrett.SwiftVoxel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftVoxel/Source/Math/SwiftVoxel-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -610,6 +630,7 @@
 			baseConfigurationReference = 27A162855A5B5D71645B9A0B /* Pods-SwiftVoxel.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y76S6B6ZNR;
 				INFOPLIST_FILE = SwiftVoxel/Info.plist;
@@ -620,6 +641,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.claygarrett.SwiftVoxel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftVoxel/Source/Math/SwiftVoxel-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

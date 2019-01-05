@@ -10,22 +10,20 @@ import UIKit
 import simd
 
 class BlockRenderable: Renderable, ControllerHandler {
-    
+    // Renderable properties
+    var modelMatrix: matrix_float4x4!
+    var renderShadows: Bool = true
+    var diffuseTexture: MTLTexture?
+    var samplerState: MTLSamplerState?
     var vertexBuffer:MTLBuffer!
     var indexBuffer:MTLBuffer!
     var uniformBuffer:MTLBuffer!
-    
-    var commandEncoder:MTLRenderCommandEncoder!
-    var diffuseTexture:MTLTexture!
-    var samplerState:MTLSamplerState!
-    
-    var rotationY:Float = 0
-    let rotationDampening:Float = 10.0
-    var bufferIndex:NSInteger = 0
-    
     var metalDevice:MTLDevice!
     
+    // view variables
+    var rotationY:Float = 0
     var currentPosition: simd_float3
+    let rotationDampening:Float = 10.0
     
     var block:Block
     
@@ -37,21 +35,13 @@ class BlockRenderable: Renderable, ControllerHandler {
         // create our world
         
         block = Block(visible: true, type: .dirt)
-        currentPosition = [0, 2, 0]
-        
-        
-        
-        
-        
+        currentPosition = [0, 4, 0]
     }
     
     func prepare() {
         self.makeBuffers()
     }
-    
-    
-    
-    
+
     /// Create our initial vertex, index, and uniform buffers
     private func makeBuffers() {
         vertexBuffer = metalDevice.makeBuffer(bytes: block.vertices, length: block.vertices.count * MemoryLayout<SVVertex>.stride, options: .cpuCacheModeWriteCombined)
@@ -78,53 +68,19 @@ class BlockRenderable: Renderable, ControllerHandler {
         samplerState = metalDevice.makeSamplerState(descriptor: samplerDesc)
     }
     
-    func draw(timePassed: TimeInterval, viewProjectionMatrix: matrix_float4x4, renderPassDescriptor: MTLRenderPassDescriptor, drawable: MTLDrawable, commandBuffer: MTLCommandBuffer, pipeline:MTLRenderPipelineState, depthStencilState: MTLDepthStencilState, completion: @escaping ()->()) {
-        
-        
-        rotationY += Float(timePassed) * (Float.pi / rotationDampening);
+    func update(timePassed: TimeInterval) {
+        let translation = MatrixUtilities.matrixFloat4x4Translation(t: currentPosition)
+//        rotationY += Float(timePassed) * (Float.pi / rotationDampening);
         
         let quat = MatrixUtilities.getQuaternionFromAngles(xx: 0, yy: 1, zz: 0, a: rotationY)
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)
-        let translation = MatrixUtilities.matrixFloat4x4Translation(t: currentPosition)
-        
+
         // get our model matrix representing our model
-        let scale = MatrixUtilities.matrixFloat4x4UniformScale(1)
-        var modelMatrix = matrix_multiply(rotation, translation)
-        
-        // calculate our model view matrix by multiplying the 2 together
-        let modelViewProjectionMatrix:matrix_float4x4 = matrix_multiply(viewProjectionMatrix, modelMatrix)
-        
-        var uniforms:SVUniforms = SVUniforms(modelViewProjectionMatrix: modelViewProjectionMatrix);
-        
-        let uniformBufferOffset:Int = MemoryLayout<SVUniforms>.stride * bufferIndex
-        let contents = uniformBuffer.contents()
-        memcpy(contents + uniformBufferOffset, &uniforms, MemoryLayout.size(ofValue: uniforms))
-        
-        
-        let renderPass = renderPassDescriptor
-        let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPass)!
-        commandEncoder.setRenderPipelineState(pipeline)
-        commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        commandEncoder.setVertexBuffer(uniformBuffer, offset: uniformBufferOffset, index: 1)
-        commandEncoder.setFragmentTexture(diffuseTexture, index: 0)
-        commandEncoder.setFragmentSamplerState(samplerState, index: 0)
-        commandEncoder.setDepthStencilState(depthStencilState)
-        commandEncoder.setFrontFacing(.counterClockwise)
-        commandEncoder.setCullMode(.none)
-        
-        // draw our geometry
-        commandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: indexBuffer.length / MemoryLayout<SVIndex>.size, indexType: .uint32, indexBuffer: indexBuffer, indexBufferOffset: 0)
-        
-        // do the encoding and present it
-        commandEncoder.endEncoding()
-        
+        modelMatrix = matrix_multiply(rotation, translation)
     }
     
     func moveTapped() {
         currentPosition.x = currentPosition.x + 2
-//        currentPosition.y = currentPosition.y + 2
         currentPosition.z = currentPosition.z + 2
     }
-    
-
 }

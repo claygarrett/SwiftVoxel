@@ -9,7 +9,7 @@
 import UIKit
 import simd
 
-let CHUNK_SIZE = 30
+let CHUNK_SIZE = 64
 let NUM_SIDES_IN_CUBE = 6
 
 class Chunk: NSObject {
