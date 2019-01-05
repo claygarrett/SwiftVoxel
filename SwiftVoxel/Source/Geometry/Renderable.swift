@@ -20,9 +20,11 @@ protocol Renderable {
     var diffuseTexture:MTLTexture? { get }
     var samplerState:MTLSamplerState? { get }
     
+    /// Returns the material this rendrable should be rendered with
+    func getMaterial() -> Material
+    
     /// Called once to do initial setup such as buffer creation
     func prepare()
-    
     
     /// Called per frame to allow renderables to update their model matrices
     ///

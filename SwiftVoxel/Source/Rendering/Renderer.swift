@@ -42,14 +42,14 @@ class Renderer:MetalViewDelegate {
     // children
     var renderables:[Renderable] = []
     
-    // rendering/meetal
+    // rendering/metal
     var commandQueue:MTLCommandQueue!
-    var pipelines:[MTLRenderPipelineState] = []
     var depthStencilState:MTLDepthStencilState!
     var shadowDepthStencilState:MTLDepthStencilState!
     var shadowMapTexture:MTLTexture!
     var pipeline:MTLRenderPipelineState!
     var metalDevice:MTLDevice!
+    var materialPipelines:[Material: MTLRenderPipelineState] = [:]
     
     // thrading
     let displaySemaphore:DispatchSemaphore = DispatchSemaphore(value: 3)
@@ -109,6 +109,29 @@ class Renderer:MetalViewDelegate {
         shadowSamplerState = metalDevice.makeSamplerState(descriptor: shadowSamplerDesc)
     }
     
+    private func getPipelineForMaterial(material: Material) -> MTLRenderPipelineState {
+        
+        if(materialPipelines.keys.contains(material)) {
+            return materialPipelines[material]!
+        }
+        
+        var renderablePipeline:MTLRenderPipelineState!
+        
+        // tie it all together with our pipeline descriptor
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.vertexFunction = material.getVertexFunction()
+        pipelineDescriptor.fragmentFunction = material.getFragmentFunction()
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        
+        do {
+            try renderablePipeline = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        } catch  {
+            fatalError("Couldn't create a render state pipeline \(material.name)")
+        }
+        return renderablePipeline
+    }
+    
     /// Create the pipeline state to be used in rendering
     private func makePipelines() {
         // get a new command queue from the device.
@@ -117,24 +140,15 @@ class Renderer:MetalViewDelegate {
         
         // create our frag and vert functions from the files in our library
         let library:MTLLibrary = metalDevice.makeDefaultLibrary()!
-        let vertexFunc = library.makeFunction(name: "vertex_project")
-        let fragmentFunc = library.makeFunction(name: "fragment_flatcolor")
         
         let shadowVertexFunction = library.makeFunction(name: "shadow_vertex")
-        
+
         let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
         renderPipelineDescriptor.label = "Shadow Gen"
         renderPipelineDescriptor.vertexDescriptor = nil
         renderPipelineDescriptor.vertexFunction = shadowVertexFunction
         renderPipelineDescriptor.fragmentFunction = nil
         renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        
-        // tie it all together with our pipeline descriptor
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunc
-        pipelineDescriptor.fragmentFunction = fragmentFunc
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         
         // Create depth state for shadow pass
         let shadowDepthStateDescription = MTLDepthStencilDescriptor()
@@ -154,15 +168,11 @@ class Renderer:MetalViewDelegate {
         
         // create our pipmeeline state from our descriptor
         do {
-            try pipeline = metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
             try shadowGenPipelineState = metalDevice.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
             
         } catch  {
             print("Error: \(error)")
         }
-        
-        pipelines.append(pipeline)
-        pipelines.append(shadowGenPipelineState)
         
         // set up our depth stencil
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
@@ -294,6 +304,9 @@ class Renderer:MetalViewDelegate {
             
             // create our command encoder and add our buffers and textures to it
             let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor)!
+            
+            let pipeline = getPipelineForMaterial(material: renderable.getMaterial())
+            
             commandEncoder.setRenderPipelineState(pipeline)
             commandEncoder.setVertexBuffer(renderable.vertexBuffer, offset: 0, index: 0)
             commandEncoder.setVertexBuffer(renderable.uniformBuffer, offset: uniformBufferOffset, index: 1)

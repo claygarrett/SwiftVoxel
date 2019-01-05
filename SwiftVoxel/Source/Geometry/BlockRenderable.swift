@@ -10,6 +10,7 @@ import UIKit
 import simd
 
 class BlockRenderable: Renderable, ControllerHandler {
+    
     // Renderable properties
     var modelMatrix: matrix_float4x4!
     var renderShadows: Bool = true
@@ -19,6 +20,9 @@ class BlockRenderable: Renderable, ControllerHandler {
     var indexBuffer:MTLBuffer!
     var uniformBuffer:MTLBuffer!
     var metalDevice:MTLDevice!
+    
+    // materials
+    private var material:Material
     
     // view variables
     var rotationY:Float = 0
@@ -32,6 +36,7 @@ class BlockRenderable: Renderable, ControllerHandler {
     /// - Parameter view: The view the renderer should render to
     init(metalDevice:MTLDevice) {
         self.metalDevice = metalDevice
+        self.material = Material(name: "Block", fragmentFunctionName: "fragment_selected", vertexFunctionName: "vertex_project", device: metalDevice)
         // create our world
         
         block = Block(visible: true, type: .dirt)
@@ -40,6 +45,7 @@ class BlockRenderable: Renderable, ControllerHandler {
     
     func prepare() {
         self.makeBuffers()
+        
     }
 
     /// Create our initial vertex, index, and uniform buffers
@@ -83,4 +89,9 @@ class BlockRenderable: Renderable, ControllerHandler {
         currentPosition.x = currentPosition.x + 2
         currentPosition.z = currentPosition.z + 2
     }
+    
+    func getMaterial() -> Material {
+        return material
+    }
+    
 }

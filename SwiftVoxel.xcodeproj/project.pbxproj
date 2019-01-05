@@ -15,6 +15,7 @@
 		E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */; };
 		E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EA21D2B9680011A48A /* ControllerHandler.swift */; };
 		E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EC21D2E6540011A48A /* ViewModel.swift */; };
+		E90B239421E0DCF900DF1A68 /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90B239321E0DCF900DF1A68 /* Material.swift */; };
 		E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */; };
 		E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E990082621D6ED8A001BD506 /* ShadowShaders.metal */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
@@ -60,6 +61,7 @@
 		E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockRenderable.swift; sourceTree = "<group>"; };
 		E908F5EA21D2B9680011A48A /* ControllerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHandler.swift; sourceTree = "<group>"; };
 		E908F5EC21D2E6540011A48A /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		E90B239321E0DCF900DF1A68 /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftVoxel-Bridging-Header.h"; sourceTree = "<group>"; };
 		E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLMathUtilities.m; sourceTree = "<group>"; };
 		E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMathUtilities.h; sourceTree = "<group>"; };
@@ -136,6 +138,14 @@
 			path = Handlers;
 			sourceTree = "<group>";
 		};
+		E90B239221E0DCE700DF1A68 /* Materials */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239321E0DCF900DF1A68 /* Material.swift */,
+			);
+			path = Materials;
+			sourceTree = "<group>";
+		};
 		E9936F9221CE6D1C008A85F8 = {
 			isa = PBXGroup;
 			children = (
@@ -184,6 +194,7 @@
 		E9936FBE21CE6E80008A85F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E90B239221E0DCE700DF1A68 /* Materials */,
 				E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */,
 				E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */,
 				E908F5E921D2B94B0011A48A /* Handlers */,
@@ -432,6 +443,7 @@
 				E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */,
 				E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */,
 				E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */,
+				E90B239421E0DCF900DF1A68 /* Material.swift in Sources */,
 				E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */,
 				E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */,
 				E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */,

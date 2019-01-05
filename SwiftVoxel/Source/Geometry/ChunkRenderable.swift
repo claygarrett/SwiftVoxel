@@ -20,6 +20,9 @@ class ChunkRenderable: Renderable {
     var uniformBuffer:MTLBuffer!
     var diffuseTexture:MTLTexture?
     
+    // material
+    var material:Material
+    
     // view variables
     var rotationY:Float = 0
     let rotationDampening:Float = 10.0
@@ -27,14 +30,14 @@ class ChunkRenderable: Renderable {
     // Geometry
     var world:World!
     var chunk:Chunk!
-    var metalDevice:MTLDevice!
+    var metalDevice:MTLDevice
     
     /// Initializes a renderer given a MetalView to render to
     ///
     /// - Parameter view: The view the renderer should render to
     init(metalDevice:MTLDevice) {
         self.metalDevice = metalDevice
-        
+        self.material = Material(name: "Block", fragmentFunctionName: "fragment_flatcolor", vertexFunctionName: "vertex_project", device: metalDevice)
         world = World.getLandscape()
         chunk = Chunk(blocks: world.blocks, size: world.size)
     }
@@ -82,5 +85,9 @@ class ChunkRenderable: Renderable {
     }
     
     func draw(timePassed: TimeInterval, viewProjectionMatrix: matrix_float4x4, projectionMatrix:matrix_float4x4, renderPassDescriptor: MTLRenderPassDescriptor, shadowRenderPassDescriptor: MTLRenderPassDescriptor, drawable: MTLDrawable, commandBuffer: MTLCommandBuffer, pipeline:MTLRenderPipelineState, shadowPipeline: MTLRenderPipelineState, depthStencilState: MTLDepthStencilState, shadowDepthStencilState: MTLDepthStencilState, completion: @escaping ()->()) {
+    }
+    
+    func getMaterial() -> Material {
+        return material
     }
 }
