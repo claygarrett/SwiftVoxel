@@ -65,11 +65,19 @@ class Renderer:MetalViewDelegate {
     
     // view/state
     let metalView:MetalView!
-    let cameraDistance:Float = 150.0
+    var cameraDistance:Float = 150.0
     var timePassed:Float = 0
     var rotationY:Float = 0
+    var rotationX:Float = 0
+    var cameraHeight:Float = 0
     let rotationDampening:Float = 5.0
     var mainCameraProjectionMatrix:matrix_float4x4!
+    
+    var isPanning: Bool = false
+    var panningLastX: Float = 0
+    var panningLastY: Float = 0
+    var zoomingLastAmount: Float = 0
+    
     
     // ui/event
     var handlers:[ControllerHandler] = []
@@ -349,24 +357,18 @@ class Renderer:MetalViewDelegate {
         }
         
         timePassed += Float(duration)
-        rotationY += Float(duration) * (Float.pi / rotationDampening);
         
-        let cameraHeight = Float(sin(timePassed / 5) * 50)
+        
+        
         let directionalCameraUpVector:vector_float3 = [0.0, 1.0, 0.0];
         
         // spin the camera around the center of the scene at a given radius r:
-        // what is the point on the circle of radius r at angle Θ?
-        // we know length of the hypoteneus made by sides x and y with angle Θ (it's r)
-        // we need to find y (opposite) and x (adjacent)
-        // we can find y by sin(Θ) = y/r, y = r•sin(Θ)
-        // we can find x by cos(Θ) = x/r, x = r•cos(Θ)
-        let x = sin(rotationY) * cameraDistance
-        let y = cos(rotationY) * cameraDistance
-        
-        let mainCameraViewMatrix:matrix_float4x4 = matrix_look_at_right_hand(vector_float3(x, cameraHeight, y),
-                                                                         vector_float3(0, 0, 0),
+        let directionVector = float3(0, 0, 1)
+        let cameraDirection = quaternion_from_euler(vector_float3(rotationX, rotationY, 0))
+        let newPosition = quaternion_rotate_vector(cameraDirection, directionVector) * cameraDistance
+        let mainCameraViewMatrix:matrix_float4x4 = matrix_look_at_right_hand(newPosition,
+                                                                         vector_float3(0, -60, 0),
                                                                          directionalCameraUpVector);
-        
         let mainCameraViewProjectionMatrix = matrix_multiply(mainCameraProjectionMatrix, mainCameraViewMatrix)
         
         // do the heavy lifting of creating a command buffer and command encoder
@@ -416,5 +418,38 @@ class Renderer:MetalViewDelegate {
         for handler in handlers {
             handler.moveTapped()
         }
+    }
+    
+    func startPan() {
+        isPanning = true
+    }
+    
+    func endPan() {
+        isPanning = true
+        panningLastX = 0
+        panningLastY = 0
+    }
+    
+    func endZoom() {
+        zoomingLastAmount = 0
+    }
+    
+    func pan(x:Float, y:Float) {
+        let thisPanX = (panningLastX - x) / 50.0
+        let thisPanY = (panningLastY - y) / 50.0
+
+        panningLastX = x
+        panningLastY = y
+        
+        rotationY += Float(thisPanX) * (Float.pi / rotationDampening);
+        rotationX += Float(thisPanY) * (Float.pi / rotationDampening);
+        cameraHeight += Float(thisPanY)
+    }
+    
+    func zoom(amount: Float) {
+        let thisZoomAmount = (zoomingLastAmount - amount) * -50
+        
+        zoomingLastAmount = amount
+        cameraDistance += Float(thisZoomAmount)
     }
 }

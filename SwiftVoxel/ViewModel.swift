@@ -34,5 +34,23 @@ class ViewModel:NSObject {
         renderer.moveBox()
         position.value = "Tapped"
     }
+    
+
+    
+    func endedPan() {
+        renderer.endPan()
+    }
+    
+    func panned(x: CGFloat, y: CGFloat) {
+        renderer.pan(x: Float(x), y: Float(y))
+    }
+    
+    func endZoom() {
+        renderer.endZoom()
+    }
+    
+    func zoomed(amount: CGFloat) {
+        renderer.zoom(amount: Float(1.0 - amount))
+    }
    
 }

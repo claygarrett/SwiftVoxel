@@ -81,7 +81,7 @@ fragment float4 fragment_flatcolor(Vertex vertexIn [[stage_in]],
     
     
     if (diffuse.a < 0.5) {
-       //discard_fragment();
+       discard_fragment();
     }
  
     return float4(diffuse.xyz * (0.7 + shadow_sample * 0.3) , 1); //

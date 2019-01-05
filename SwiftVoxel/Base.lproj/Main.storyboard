@@ -40,6 +40,7 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C92-tC-f5N">
                                 <rect key="frame" x="152.5" y="527" width="70" height="40"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="64Z-AC-jEK"/>
                                     <constraint firstAttribute="width" constant="70" id="blh-Nl-M1X"/>
@@ -51,6 +52,7 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.60982640939999999" blue="0.82745612160000004" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="HeA-WX-JXp" secondAttribute="trailing" id="cmR-iH-hu7"/>
                             <constraint firstItem="HeA-WX-JXp" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="dsK-qb-B2e"/>
@@ -60,14 +62,29 @@
                             <constraint firstItem="C92-tC-f5N" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="uFI-aO-aeW"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="B2c-OB-whG" appends="YES" id="HCg-EM-4P0"/>
+                            <outletCollection property="gestureRecognizers" destination="IWC-mn-oIe" appends="YES" id="SSg-1r-vmK"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="metalView" destination="HeA-WX-JXp" id="wjI-Jt-nOr"/>
                         <outlet property="moveButton" destination="C92-tC-f5N" id="vAd-TJ-ybw"/>
+                        <outlet property="panGestureRecognizer" destination="B2c-OB-whG" id="Q00-Qp-2NO"/>
                         <outlet property="positionLabel" destination="BKI-eO-5xv" id="eAb-V0-baf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="B2c-OB-whG">
+                    <connections>
+                        <action selector="didPan:" destination="BYZ-38-t0r" id="PmK-pu-Us4"/>
+                    </connections>
+                </panGestureRecognizer>
+                <pinchGestureRecognizer id="IWC-mn-oIe">
+                    <connections>
+                        <action selector="didPinch:" destination="BYZ-38-t0r" id="K6X-Hc-2dU"/>
+                    </connections>
+                </pinchGestureRecognizer>
             </objects>
         </scene>
     </scenes>

@@ -18,6 +18,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var moveButton: UIButton!
     @IBOutlet weak var positionLabel: UILabel!
     
+    @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
+    
     var viewModel:ViewModel!
     let disposeBag = DisposeBag()
     
@@ -25,7 +27,26 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         viewModel = ViewModel(metalView: metalView)
         bindViewModel()
+        
+        
     }
+    
+    @IBAction func didPan(_ sender: UIPanGestureRecognizer) {
+        let point = sender.translation(in: self.view)
+        viewModel.panned(x: point.x, y: point.y)
+        if(sender.state == .ended) {
+            viewModel.endedPan()
+        }
+    }
+    
+    @IBAction func didPinch(_ sender: UIPinchGestureRecognizer) {
+        let amount = sender.scale
+        viewModel.zoomed(amount: amount)
+        if(sender.state == .ended) {
+            viewModel.endZoom()
+        }
+    }
+    
     
     func bindViewModel() {
         // tie our label to the position variable

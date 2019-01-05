@@ -195,8 +195,6 @@
 			isa = PBXGroup;
 			children = (
 				E90B239221E0DCE700DF1A68 /* Materials */,
-				E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */,
-				E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */,
 				E908F5E921D2B94B0011A48A /* Handlers */,
 				E9936FD721CFC80C008A85F8 /* Textures */,
 				E9936FD421CFC7E7008A85F8 /* Shaders */,
@@ -252,6 +250,8 @@
 		E9936FD121CE985D008A85F8 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */,
+				E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */,
 				E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */,
 				E908F5E321D2AE9C0011A48A /* Vector.swift */,
 				E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */,
