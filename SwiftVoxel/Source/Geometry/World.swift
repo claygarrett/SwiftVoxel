@@ -37,7 +37,7 @@ class World {
         
         let world = World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
         
-        let modelsArray1 = (imported["models"] as! [Any])[0] as! [Any]
+        let modelsArray = (imported["models"] as! [Any])[0] as! [Any]
         let paletteArray = (imported["palette"] as! [Any])
         
         for _ in 0..<CHUNK_SIZE {
