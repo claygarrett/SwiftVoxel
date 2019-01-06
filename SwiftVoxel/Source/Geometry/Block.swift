@@ -38,6 +38,7 @@ class Block {
     
     var visible: Bool
     var type: BlockType
+    var color:vector_float4
     
     let baryX = simd_float3(x: 1, y: 0, z: 0)
     let baryY = simd_float3(x: 0, y: 1, z: 0)
@@ -51,9 +52,10 @@ class Block {
     
     var numVerts:UInt32 = 0
     
-    init(visible: Bool, type: BlockType) {
+    init(visible: Bool, type: BlockType, color: float4?) {
         self.visible = visible
         self.type = type
+        self.color = color != nil ? color! : float4(0, 0, 0, 0)
         
         triangleVertPositions = [
             .north: [rightBottomBack, leftTopBack, leftBottomBack, rightTopBack, leftTopBack, rightBottomBack],
@@ -78,7 +80,7 @@ class Block {
         for direction in Block.Direction.allCases {
             let offset = faceNormals[direction]!;
             
-            addFace(position: [0, 0, 0, 0], direction: direction)
+            addFace(position: [0, 0, 0, 0], direction: direction, color: nil)
         }
     }
     
@@ -88,7 +90,7 @@ class Block {
     ///   - position: The center position of the block who's face we're drawing
     ///   - direction: The direciton of the face we're adding
     ///   - color: The color of the face
-    func addFace(position:simd_float4, direction:Block.Direction) {
+    func addFace(position:simd_float4, direction:Block.Direction, color: float4?) {
         
         let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
         let offsetArray:simd_float4 = [offset, offset, offset, 0]
@@ -118,7 +120,7 @@ class Block {
             let vertex = SVVertex(
                 position: finalPosition,
                 normal: faceNormals[direction]!,
-                uv: uvs[direction]![i])
+                uv: uvs[direction]![i], color: color)
             
             vertices.append(vertex)
         }

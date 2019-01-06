@@ -16,13 +16,17 @@ struct SVVertex {
     let uv:vector_float2
     let shadow_coord:vector_float3
     
-    init(position:vector_float4, normal: vector_float3, uv:vector_float2) {
+    init(position:vector_float4, normal: vector_float3, uv:vector_float2, color: float4?) {
         self.position = position
         self.normal = normal
         self.uv = uv
-        self.color = vector_float4(0, 0, 0, 1)
         self.shadow_coord = vector_float3(0, 0, 0)
         self.highlighted = true
+        if(color != nil) {
+            self.color = color!
+        } else {
+            self.color = float4(0, 0, 0, 0)
+        }
     }
 }
 

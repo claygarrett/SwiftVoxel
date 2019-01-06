@@ -92,7 +92,7 @@ class Chunk: NSObject {
                         // if the neighbor block of this face is outside the bounds of this chunk, just add the face
                         // TODO: Add checking of neighboring chunks to further optimize drawing
                         if(newI < 0 || newI >= blockSize.x || newJ < 0 || newJ >= blockSize.y || newK < 0 || newK >= blockSize.z) {
-                            addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
+                            addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction, color: block.color)
                             continue
                         }
                         
@@ -102,7 +102,7 @@ class Chunk: NSObject {
                             continue;
                         }
                         
-                        addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
+                        addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction, color: block.color)
                     }
                 }
             }
@@ -115,7 +115,7 @@ class Chunk: NSObject {
     ///   - position: The center position of the block who's face we're drawing
     ///   - direction: The direciton of the face we're adding
     ///   - color: The color of the face
-    func addFace(block: Block, position:simd_float4, direction:Block.Direction) {
+    func addFace(block: Block, position:simd_float4, direction:Block.Direction, color: float4?) {
         
        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
        let offsetArray:simd_float4 = [offset, offset, offset, 0]
@@ -145,7 +145,8 @@ class Chunk: NSObject {
             let vertex = SVVertex(
                 position: finalPosition,
                 normal: faceNormals[direction]!,
-                uv: uvs[direction]![i])
+                uv: uvs[direction]![i],
+                color: color)
             
             vertices.append(vertex)
         }

@@ -38,7 +38,7 @@ class ChunkRenderable: Renderable {
     init(metalDevice:MTLDevice) {
         self.metalDevice = metalDevice
         self.material = Material(name: "Block", fragmentFunctionName: "fragment_flatcolor", vertexFunctionName: "vertex_project", device: metalDevice)
-        world = World.getLandscape()
+        world = World.getFile()
         chunk = Chunk(blocks: world.blocks, size: world.size)
     }
     

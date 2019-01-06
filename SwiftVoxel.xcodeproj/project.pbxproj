@@ -16,6 +16,9 @@
 		E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EA21D2B9680011A48A /* ControllerHandler.swift */; };
 		E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EC21D2E6540011A48A /* ViewModel.swift */; };
 		E90B239421E0DCF900DF1A68 /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90B239321E0DCF900DF1A68 /* Material.swift */; };
+		E90B239721E1466500DF1A68 /* FileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90B239621E1466500DF1A68 /* FileImporter.swift */; };
+		E90B239C21E1484200DF1A68 /* character.json in Resources */ = {isa = PBXBuildFile; fileRef = E90B239B21E1484200DF1A68 /* character.json */; };
+		E90B239E21E24D0300DF1A68 /* fireplace.json in Resources */ = {isa = PBXBuildFile; fileRef = E90B239D21E24D0300DF1A68 /* fireplace.json */; };
 		E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */; };
 		E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E990082621D6ED8A001BD506 /* ShadowShaders.metal */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
@@ -62,6 +65,9 @@
 		E908F5EA21D2B9680011A48A /* ControllerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHandler.swift; sourceTree = "<group>"; };
 		E908F5EC21D2E6540011A48A /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		E90B239321E0DCF900DF1A68 /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
+		E90B239621E1466500DF1A68 /* FileImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImporter.swift; sourceTree = "<group>"; };
+		E90B239B21E1484200DF1A68 /* character.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = character.json; sourceTree = "<group>"; };
+		E90B239D21E24D0300DF1A68 /* fireplace.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fireplace.json; sourceTree = "<group>"; };
 		E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftVoxel-Bridging-Header.h"; sourceTree = "<group>"; };
 		E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLMathUtilities.m; sourceTree = "<group>"; };
 		E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMathUtilities.h; sourceTree = "<group>"; };
@@ -146,6 +152,23 @@
 			path = Materials;
 			sourceTree = "<group>";
 		};
+		E90B239521E145D200DF1A68 /* IO */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239621E1466500DF1A68 /* FileImporter.swift */,
+			);
+			path = IO;
+			sourceTree = "<group>";
+		};
+		E90B239A21E1484200DF1A68 /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239D21E24D0300DF1A68 /* fireplace.json */,
+				E90B239B21E1484200DF1A68 /* character.json */,
+			);
+			path = Input;
+			sourceTree = "<group>";
+		};
 		E9936F9221CE6D1C008A85F8 = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +192,7 @@
 		E9936F9D21CE6D1C008A85F8 /* SwiftVoxel */ = {
 			isa = PBXGroup;
 			children = (
+				E90B239A21E1484200DF1A68 /* Input */,
 				E907A09621CFFDD6007C4D46 /* Media */,
 				E9936FBE21CE6E80008A85F8 /* Source */,
 				E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */,
@@ -194,6 +218,7 @@
 		E9936FBE21CE6E80008A85F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E90B239521E145D200DF1A68 /* IO */,
 				E90B239221E0DCE700DF1A68 /* Materials */,
 				E908F5E921D2B94B0011A48A /* Handlers */,
 				E9936FD721CFC80C008A85F8 /* Textures */,
@@ -365,6 +390,8 @@
 			files = (
 				E907A09821CFFDE8007C4D46 /* grass.png in Resources */,
 				E9936FA921CE6D1C008A85F8 /* LaunchScreen.storyboard in Resources */,
+				E90B239C21E1484200DF1A68 /* character.json in Resources */,
+				E90B239E21E24D0300DF1A68 /* fireplace.json in Resources */,
 				E9936FA621CE6D1C008A85F8 /* Assets.xcassets in Resources */,
 				E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */,
 			);
@@ -437,6 +464,7 @@
 			files = (
 				E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */,
 				E9936FC021CE6E95008A85F8 /* MetalView.swift in Sources */,
+				E90B239721E1466500DF1A68 /* FileImporter.swift in Sources */,
 				E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */,
 				E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */,
 				E9936FDD21CFD3A3008A85F8 /* BlockUtilities.swift in Sources */,

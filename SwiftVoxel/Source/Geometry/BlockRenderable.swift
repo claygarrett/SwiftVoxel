@@ -39,7 +39,7 @@ class BlockRenderable: Renderable, ControllerHandler {
         self.material = Material(name: "Block", fragmentFunctionName: "fragment_selected", vertexFunctionName: "vertex_project", device: metalDevice)
         // create our world
         
-        block = Block(visible: true, type: .dirt)
+        block = Block(visible: true, type: .dirt, color: nil)
         currentPosition = [0, 4, 0]
     }
     

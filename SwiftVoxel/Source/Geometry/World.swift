@@ -22,10 +22,48 @@ class World {
     
     static func getBlock() -> World {
         let world = World(width: 1, height: 1, depth: 2)
-        let block = Block(visible: true, type: .grass)
+        let block = Block(visible: true, type: .grass, color: nil)
         world.blocks.append(block)
         world.blocks.append(block)
 
+        return world
+    }
+    
+    static func getFile() -> World {
+        guard let imported:[String: Any] = FileImporter.importFile(filename: "fireplace") as? [String : Any] else {
+            return World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
+        }
+        
+        
+        let world = World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
+        
+        let modelsArray1 = (imported["models"] as! [Any])[0] as! [Any]
+        let paletteArray = (imported["palette"] as! [Any])
+        
+        for _ in 0..<CHUNK_SIZE {
+            for _ in 0..<CHUNK_SIZE {
+                for _ in 0..<CHUNK_SIZE {
+                    let block = Block(visible: true, type: .air, color: nil)
+                    world.blocks.append(block)
+                }
+            }
+        }
+        
+        var colors:[float4] = []
+        
+        for palette in paletteArray {
+            let castedPalette = palette as! [String: Int]
+            colors.append(float4(Float(castedPalette["r"]!) / 255.0, Float(castedPalette["g"]!) / 255.0, Float(castedPalette["b"]!) / 255.0, Float(castedPalette["a"]!) / 255.0))
+        }
+        
+        for model in modelsArray {
+            let castedModel = model as! [String: Int]
+            let index = BlockUtilities.get1DIndexFromXYZ(x: castedModel["x"]!, y: castedModel["z"]!, z: CHUNK_SIZE - castedModel["y"]!, chunkSize: (CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE))
+            let block = world.blocks[index]
+            block.color = colors[castedModel["colorIndex"]!]
+            block.type = .trunk
+        }
+        
         return world
     }
     
@@ -34,7 +72,7 @@ class World {
         for _ in 0..<gridSize {
             for _ in 0..<gridSize {
                 for _ in 0..<gridSize {
-                    let block = Block(visible: true, type: .air)
+                    let block = Block(visible: true, type: .air, color: nil)
                     world.blocks.append(block)
                 }
             }
@@ -62,6 +100,7 @@ class World {
         
         return world
      }
+    
     func addTreeAtLocation(x:Int, z:Int, height:Int) {
         let width = Int(height / 2)
         for j in 0..<height {
