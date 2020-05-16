@@ -1,10 +1,3 @@
-//
-//  FileImporter.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 1/5/19.
-//  Copyright © 2019 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 
@@ -18,6 +11,5 @@ class FileImporter: NSObject {
             let jsonResult = try! JSONSerialization.jsonObject(with: jsonFile, options: .mutableContainers) 
             return jsonResult
         }
-        
     }
 }

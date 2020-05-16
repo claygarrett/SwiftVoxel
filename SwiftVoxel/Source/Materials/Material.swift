@@ -1,15 +1,8 @@
-//
-//  Material.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 1/5/19.
-//  Copyright © 2019 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 
 /// Defines all aspects of the visual appearance of a renderable
-//  as well as other things that affect rendering (such as a vertex function)
+/// as well as other things that affect rendering (such as a vertex function)
 class Material: NSObject {
     private var vertexFunctionName:String
     private var fragmentFunctionName:String

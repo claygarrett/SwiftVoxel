@@ -1,10 +1,3 @@
-//
-//  ChunkRenderable.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 12/25/18.
-//  Copyright © 2018 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 import simd
@@ -38,7 +31,7 @@ class ChunkRenderable: Renderable {
     init(metalDevice:MTLDevice) {
         self.metalDevice = metalDevice
         self.material = Material(name: "Block", fragmentFunctionName: "fragment_flatcolor", vertexFunctionName: "vertex_project", device: metalDevice)
-        world = World.getFile()
+        world = World.getLandscape()
         chunk = Chunk(blocks: world.blocks, size: world.size)
     }
     
@@ -74,7 +67,7 @@ class ChunkRenderable: Renderable {
     
     func update(timePassed: TimeInterval) {
         // uncomment this when you want the chunk to rotate
-        // rotationY += Float(timePassed) * (Float.pi / rotationDampening);
+         rotationY += Float(timePassed) * (Float.pi / rotationDampening);
         
         let quat = MatrixUtilities.getQuaternionFromAngles(xx: 0, yy: 1, zz: 0, a: rotationY)
         let rotation = MatrixUtilities.getMatrixFromQuat(q: quat)

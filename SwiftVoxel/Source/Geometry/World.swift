@@ -1,10 +1,3 @@
-//
-//  World.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 12/23/18.
-//  Copyright © 2018 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 import simd
@@ -33,7 +26,6 @@ class World {
         guard let imported:[String: Any] = FileImporter.importFile(filename: "fireplace") as? [String : Any] else {
             return World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
         }
-        
         
         let world = World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
         
@@ -86,7 +78,7 @@ class World {
             }
         }
         
-        let numTrees = 50
+        let numTrees = 100
         for _ in 0..<numTrees {
             let rangeMin = 5
             let rangeMax = world.size.x - 5
@@ -96,7 +88,6 @@ class World {
             
             world.addTreeAtLocation(x: randomX, z: randomY, height: randomHeight)
         }
-        
         
         return world
      }
@@ -121,6 +112,5 @@ class World {
                 }
             }
         }
-        
     }
 }
