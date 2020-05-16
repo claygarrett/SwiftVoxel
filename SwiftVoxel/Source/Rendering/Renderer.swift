@@ -234,7 +234,7 @@ class Renderer:MetalViewDelegate {
         shadowViewMatrix = matrix_multiply(shadowViewMatrix, modelMatrix)
    
         // TODO: Make this dyanmic based on phone resolution
-        let aspectRatio:Float = 4 / 3.0
+        let aspectRatio:Float = 3.0 / 4.0
         
         // this is temporary while we're just spinning around the scene
         // but we need to determine the size of our ortho shadow box
