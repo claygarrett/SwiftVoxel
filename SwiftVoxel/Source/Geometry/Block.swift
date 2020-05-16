@@ -38,11 +38,119 @@ class Block {
     
     var visible: Bool
     var type: BlockType
+    var color:vector_float4
     
-    init(visible: Bool, type: BlockType) {
+    let baryX = simd_float3(x: 1, y: 0, z: 0)
+    let baryY = simd_float3(x: 0, y: 1, z: 0)
+    let baryZ = simd_float3(x: 0, y: 0, z: 1)
+    
+    let triangleVertPositions:[Block.Direction: [simd_float4]]
+    
+    // Geometry
+    var triangles:[SVIndex] = []
+    var vertices:[SVVertex] = []
+    
+    var numVerts:UInt32 = 0
+    
+    init(visible: Bool, type: BlockType, color: float4?) {
         self.visible = visible
         self.type = type
+        self.color = color != nil ? color! : float4(0, 0, 0, 0)
+        
+        triangleVertPositions = [
+            .north: [rightBottomBack, leftTopBack, leftBottomBack, rightTopBack, leftTopBack, rightBottomBack],
+            .east: [rightTopFront, rightBottomBack, rightBottomFront, rightTopFront, rightTopBack, rightBottomBack],
+            .south: [leftBottomFront, leftTopFront, rightBottomFront, rightBottomFront, leftTopFront, rightTopFront],
+            .west: [leftTopFront, leftBottomFront, leftBottomBack, leftTopFront, leftBottomBack, leftTopBack],
+            .top: [leftTopBack, rightTopFront, leftTopFront, leftTopBack, rightTopBack, rightTopFront],
+            .bottom: [leftBottomFront, rightBottomBack, leftBottomBack, leftBottomFront, rightBottomFront, rightBottomBack]
+        ]
+        
+        
+        self.recalculate()
     }
+    
+    /// Rebuilds the geometry for the given chunk
+    func recalculate() {
+        if(type == .air) {
+            return;
+        }
+                    
+        
+        for direction in Block.Direction.allCases {
+            let offset = faceNormals[direction]!;
+            
+            addFace(position: [0, 0, 0, 0], direction: direction, color: nil)
+        }
+    }
+    
+    /// Adds a face consisting of two triangls for the given position, direction, and color
+    ///
+    /// - Parameters:
+    ///   - position: The center position of the block who's face we're drawing
+    ///   - direction: The direciton of the face we're adding
+    ///   - color: The color of the face
+    func addFace(position:simd_float4, direction:Block.Direction, color: float4?) {
+        
+        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
+        let offsetArray:simd_float4 = [offset, offset, offset, 0]
+        
+        for i in 0..<NUM_SIDES_IN_CUBE {
+            triangles.append(numVerts + UInt32(i))
+        }
+        
+        numVerts += UInt32(NUM_SIDES_IN_CUBE)
+        
+        let (topLeftUV, topRightUV, bottomRightUV, bottomLeftUV) = getUVCorners(forDirection: direction)
+        
+        
+        
+        let uvs:[Block.Direction: [simd_float2]] = [
+            .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
+            .east: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
+            .south: [bottomLeftUV, topLeftUV, bottomRightUV, bottomRightUV, topLeftUV, topRightUV],
+            .west: [topRightUV, bottomRightUV, bottomLeftUV, topRightUV, bottomLeftUV, topLeftUV],
+            .top: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
+            .bottom: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomLeftUV]
+        ]
+        
+        for i in 0..<NUM_SIDES_IN_CUBE {
+            let triangleVertPosition = triangleVertPositions[direction]![i]
+            let finalPosition = offsetArray + triangleVertPosition + position * gridSpacing
+            let vertex = SVVertex(
+                position: finalPosition,
+                normal: faceNormals[direction]!,
+                uv: uvs[direction]![i], color: color)
+            
+            vertices.append(vertex)
+        }
+    }
+    
+    
+    // Configuration
+    let gridSpacing:Float = 2.0
+    
+    // The positions of the verts of each corner of the cube
+    let rightTopBack:simd_float4 = [1.0, 1.0, 1.0, 1.0];
+    let rightTopFront:simd_float4 = [1.0, 1.0, -1.0, 1.0];
+    let rightBottomBack:simd_float4 = [1.0, -1.0, 1.0, 1.0];
+    let rightBottomFront:simd_float4 = [1.0, -1.0, -1.0, 1.0];
+    let leftTopBack:simd_float4 = [-1.0, 1.0, 1.0, 1.0];
+    let leftTopFront:simd_float4 = [-1.0, 1.0, -1.0, 1.0];
+    let leftBottomBack:simd_float4 = [-1.0, -1.0, 1.0, 1.0];
+    let leftBottomFront:simd_float4 = [-1.0, -1.0, -1.0, 1.0];
+    
+    // The normal vector of each of the faces of the cube
+    let faceNormals:[Block.Direction: vector_float3] = [
+        .north: [0, 0, 1],
+        .east: [1, 0, 0],
+        .south: [0, 0, -1],
+        .west: [-1, 0, 0],
+        .top: [0, 1, 0],
+        .bottom:[0, -1, 0]
+    ]
+    
+
     
     /// Returns the x/y uv positions of the slot this block's texture resides in
     ///
@@ -85,7 +193,6 @@ class Block {
         
         
         let returnVal = (topLeft: topLeftUV, topRight: topRightUV, bottomRight: bottomRightUV, bottomLeft: bottomLeftUV)
-        print("type: \(self.type) \(returnVal)")
         return returnVal
         
         

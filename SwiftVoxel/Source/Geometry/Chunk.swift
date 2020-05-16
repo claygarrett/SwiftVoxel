@@ -9,15 +9,15 @@
 import UIKit
 import simd
 
-let CHUNK_SIZE = 32
-private let NUM_SIDES_IN_CUBE = 6
+let CHUNK_SIZE = 64
+let NUM_SIDES_IN_CUBE = 6
 
 class Chunk: NSObject {
     
-
-    
     // Configuration
     let gridSpacing:Float = 2.0
+    
+    var blockSize:Vector3
     
     // The positions of the verts of each corner of the cube
     let rightTopBack:simd_float4 = [1.0, 1.0, 1.0, 1.0];
@@ -39,33 +39,21 @@ class Chunk: NSObject {
         .bottom:[0, -1, 0]
     ]
     
-    let baryX = simd_float3(x: 1, y: 0, z: 0)
-    let baryY = simd_float3(x: 0, y: 1, z: 0)
-    let baryZ = simd_float3(x: 0, y: 0, z: 1)
-    
-    let faceBarycentridCoords:[Block.Direction: [simd_float3]]
     let triangleVertPositions:[Block.Direction: [simd_float4]]
     
     // Geometry
     var triangles:[SVIndex] = []
     var vertices:[SVVertex] = []
     var blocks: [Block]
-    var numVerts:UInt16 = 0
+    var numVerts:UInt32 = 0
     
     /// Initializes a chunk with a given set of blocks
     ///
     /// - Parameter blocks: The blocks that should be chunked
-    init(blocks:[Block]) {
+    init(blocks:[Block], size: Vector3) {
         self.blocks = blocks
         
-        faceBarycentridCoords = [
-                .north: [baryX, baryY, baryZ, baryZ, baryY, baryX],
-                .east: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .south: [baryZ, baryY, baryX, baryX, baryY, baryZ],
-                .west: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .top: [baryX, baryY, baryZ, baryX, baryY, baryZ],
-                .bottom: [baryX, baryY, baryZ, baryX, baryY, baryZ]
-        ]
+        self.blockSize = size
         
         triangleVertPositions = [
             .north: [rightBottomBack, leftTopBack, leftBottomBack, rightTopBack, leftTopBack, rightBottomBack],
@@ -82,10 +70,10 @@ class Chunk: NSObject {
     
     /// Rebuilds the geometry for the given chunk
     func recalculate() {
-        for i in 0..<CHUNK_SIZE {
-            for j in 0..<CHUNK_SIZE {
-                for k in 0..<CHUNK_SIZE {
-                    let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: j, z: k, chunkSize: CHUNK_SIZE)
+        for i in 0..<blockSize.x{
+            for j in 0..<blockSize.y {
+                for k in 0..<blockSize.z {
+                    let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: j, z: k, chunkSize: blockSize)
                     let block = blocks[index]
                     
                     if(block.type == .air) {
@@ -99,12 +87,12 @@ class Chunk: NSObject {
                         let newJ = j + Int(offset.y);
                         let newK = k + Int(offset.z);
                         
-                        let newIndex = BlockUtilities.get1DIndexFromXYZ(x: newI, y: newJ, z: newK, chunkSize: CHUNK_SIZE)
+                        let newIndex = BlockUtilities.get1DIndexFromXYZ(x: newI, y: newJ, z: newK, chunkSize: blockSize)
                         
                         // if the neighbor block of this face is outside the bounds of this chunk, just add the face
                         // TODO: Add checking of neighboring chunks to further optimize drawing
-                        if(newI < 0 || newI >= CHUNK_SIZE || newJ < 0 || newJ >= CHUNK_SIZE || newK < 0 || newK >= CHUNK_SIZE) {
-                            addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
+                        if(newI < 0 || newI >= blockSize.x || newJ < 0 || newJ >= blockSize.y || newK < 0 || newK >= blockSize.z) {
+                            addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction, color: block.color)
                             continue
                         }
                         
@@ -114,7 +102,7 @@ class Chunk: NSObject {
                             continue;
                         }
                         
-                        addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction)
+                        addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction, color: block.color)
                     }
                 }
             }
@@ -127,16 +115,16 @@ class Chunk: NSObject {
     ///   - position: The center position of the block who's face we're drawing
     ///   - direction: The direciton of the face we're adding
     ///   - color: The color of the face
-    func addFace(block: Block, position:simd_float4, direction:Block.Direction) {
+    func addFace(block: Block, position:simd_float4, direction:Block.Direction, color: float4?) {
         
        let offset = -Float(CHUNK_SIZE) * Float(gridSpacing) / 2.0 + 1
        let offsetArray:simd_float4 = [offset, offset, offset, 0]
         
         for i in 0..<NUM_SIDES_IN_CUBE {
-            triangles.append(numVerts + UInt16(i))
+            triangles.append(numVerts + UInt32(i))
         }
         
-        numVerts += UInt16(NUM_SIDES_IN_CUBE)
+        numVerts += UInt32(NUM_SIDES_IN_CUBE)
         
         let (topLeftUV, topRightUV, bottomRightUV, bottomLeftUV) = block.getUVCorners(forDirection: direction)
         
@@ -157,12 +145,14 @@ class Chunk: NSObject {
             let vertex = SVVertex(
                 position: finalPosition,
                 normal: faceNormals[direction]!,
-                barycentricCoord: faceBarycentridCoords[direction]![i],
-                uv: uvs[direction]![i])
+                uv: uvs[direction]![i],
+                color: color)
             
             vertices.append(vertex)
         }
     }
+    
+    
     
 
 }

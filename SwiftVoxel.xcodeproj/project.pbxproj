@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		E907A09821CFFDE8007C4D46 /* grass.png in Resources */ = {isa = PBXBuildFile; fileRef = E907A09721CFFDE8007C4D46 /* grass.png */; };
+		E908F5E021D2844A0011A48A /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5DF21D2844A0011A48A /* Renderable.swift */; };
+		E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E121D286120011A48A /* ChunkRenderable.swift */; };
+		E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E321D2AE9C0011A48A /* Vector.swift */; };
+		E908F5E621D2B2390011A48A /* SelectedCube.metal in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E521D2B2390011A48A /* SelectedCube.metal */; };
+		E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */; };
+		E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EA21D2B9680011A48A /* ControllerHandler.swift */; };
+		E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908F5EC21D2E6540011A48A /* ViewModel.swift */; };
+		E90B239421E0DCF900DF1A68 /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90B239321E0DCF900DF1A68 /* Material.swift */; };
+		E90B239721E1466500DF1A68 /* FileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90B239621E1466500DF1A68 /* FileImporter.swift */; };
+		E90B239C21E1484200DF1A68 /* character.json in Resources */ = {isa = PBXBuildFile; fileRef = E90B239B21E1484200DF1A68 /* character.json */; };
+		E90B239E21E24D0300DF1A68 /* fireplace.json in Resources */ = {isa = PBXBuildFile; fileRef = E90B239D21E24D0300DF1A68 /* fireplace.json */; };
+		E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */; };
+		E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E990082621D6ED8A001BD506 /* ShadowShaders.metal */; };
 		E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */; };
 		E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FA021CE6D1C008A85F8 /* ViewController.swift */; };
 		E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9936FA221CE6D1C008A85F8 /* Main.storyboard */; };
@@ -22,10 +35,11 @@
 		E9936FCE21CE7D0B008A85F8 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FCD21CE7D0B008A85F8 /* Chunk.swift */; };
 		E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FCF21CE7D2D008A85F8 /* Block.swift */; };
 		E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */; };
-		E9936FD621CFC7F8008A85F8 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD521CFC7F8008A85F8 /* Shaders.metal */; };
+		E9936FD621CFC7F8008A85F8 /* MainShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD521CFC7F8008A85F8 /* MainShaders.metal */; };
 		E9936FD921CFC81D008A85F8 /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FD821CFC81D008A85F8 /* TextureLoader.swift */; };
 		E9936FDB21CFD225008A85F8 /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FDA21CFD225008A85F8 /* World.swift */; };
 		E9936FDD21CFD3A3008A85F8 /* BlockUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */; };
+		F77A38325E5AAA98C79BDE21 /* Pods_SwiftVoxel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9AE7E6F73260571710B2C6E /* Pods_SwiftVoxel.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +53,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27A162855A5B5D71645B9A0B /* Pods-SwiftVoxel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftVoxel.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftVoxel/Pods-SwiftVoxel.release.xcconfig"; sourceTree = "<group>"; };
+		D861970115649C9D83EDF8A5 /* Pods-SwiftVoxel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftVoxel.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftVoxel/Pods-SwiftVoxel.debug.xcconfig"; sourceTree = "<group>"; };
+		D9AE7E6F73260571710B2C6E /* Pods_SwiftVoxel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftVoxel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E907A09721CFFDE8007C4D46 /* grass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grass.png; sourceTree = "<group>"; };
+		E908F5DF21D2844A0011A48A /* Renderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
+		E908F5E121D286120011A48A /* ChunkRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkRenderable.swift; sourceTree = "<group>"; };
+		E908F5E321D2AE9C0011A48A /* Vector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
+		E908F5E521D2B2390011A48A /* SelectedCube.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SelectedCube.metal; sourceTree = "<group>"; };
+		E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockRenderable.swift; sourceTree = "<group>"; };
+		E908F5EA21D2B9680011A48A /* ControllerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHandler.swift; sourceTree = "<group>"; };
+		E908F5EC21D2E6540011A48A /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		E90B239321E0DCF900DF1A68 /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
+		E90B239621E1466500DF1A68 /* FileImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImporter.swift; sourceTree = "<group>"; };
+		E90B239B21E1484200DF1A68 /* character.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = character.json; sourceTree = "<group>"; };
+		E90B239D21E24D0300DF1A68 /* fireplace.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fireplace.json; sourceTree = "<group>"; };
+		E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftVoxel-Bridging-Header.h"; sourceTree = "<group>"; };
+		E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLMathUtilities.m; sourceTree = "<group>"; };
+		E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMathUtilities.h; sourceTree = "<group>"; };
+		E990082621D6ED8A001BD506 /* ShadowShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShadowShaders.metal; sourceTree = "<group>"; };
+		E990082821D6EDC7001BD506 /* AAPLShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAPLShaderTypes.h; sourceTree = "<group>"; };
+		E990082921D6EDF7001BD506 /* AAPLConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAPLConfig.h; sourceTree = "<group>"; };
 		E9936F9B21CE6D1C008A85F8 /* SwiftVoxel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftVoxel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9936FA021CE6D1C008A85F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -58,7 +92,7 @@
 		E9936FCD21CE7D0B008A85F8 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
 		E9936FCF21CE7D2D008A85F8 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtilities.swift; sourceTree = "<group>"; };
-		E9936FD521CFC7F8008A85F8 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		E9936FD521CFC7F8008A85F8 /* MainShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MainShaders.metal; sourceTree = "<group>"; };
 		E9936FD821CFC81D008A85F8 /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		E9936FDA21CFD225008A85F8 /* World.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
 		E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockUtilities.swift; sourceTree = "<group>"; };
@@ -71,6 +105,7 @@
 			files = (
 				E9936FC521CE6F49008A85F8 /* MetalKit.framework in Frameworks */,
 				E9936FC321CE6F43008A85F8 /* Metal.framework in Frameworks */,
+				F77A38325E5AAA98C79BDE21 /* Pods_SwiftVoxel.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,12 +119,54 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4521BC7E66823AEC75F68C9B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D861970115649C9D83EDF8A5 /* Pods-SwiftVoxel.debug.xcconfig */,
+				27A162855A5B5D71645B9A0B /* Pods-SwiftVoxel.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		E907A09621CFFDD6007C4D46 /* Media */ = {
 			isa = PBXGroup;
 			children = (
 				E907A09721CFFDE8007C4D46 /* grass.png */,
 			);
 			path = Media;
+			sourceTree = "<group>";
+		};
+		E908F5E921D2B94B0011A48A /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				E908F5EA21D2B9680011A48A /* ControllerHandler.swift */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
+		E90B239221E0DCE700DF1A68 /* Materials */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239321E0DCF900DF1A68 /* Material.swift */,
+			);
+			path = Materials;
+			sourceTree = "<group>";
+		};
+		E90B239521E145D200DF1A68 /* IO */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239621E1466500DF1A68 /* FileImporter.swift */,
+			);
+			path = IO;
+			sourceTree = "<group>";
+		};
+		E90B239A21E1484200DF1A68 /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				E90B239D21E24D0300DF1A68 /* fireplace.json */,
+				E90B239B21E1484200DF1A68 /* character.json */,
+			);
+			path = Input;
 			sourceTree = "<group>";
 		};
 		E9936F9221CE6D1C008A85F8 = {
@@ -99,6 +176,7 @@
 				E9936FB221CE6D1D008A85F8 /* SwiftVoxelTests */,
 				E9936F9C21CE6D1C008A85F8 /* Products */,
 				E9936FC121CE6F43008A85F8 /* Frameworks */,
+				4521BC7E66823AEC75F68C9B /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -114,10 +192,12 @@
 		E9936F9D21CE6D1C008A85F8 /* SwiftVoxel */ = {
 			isa = PBXGroup;
 			children = (
+				E90B239A21E1484200DF1A68 /* Input */,
 				E907A09621CFFDD6007C4D46 /* Media */,
 				E9936FBE21CE6E80008A85F8 /* Source */,
 				E9936F9E21CE6D1C008A85F8 /* AppDelegate.swift */,
 				E9936FA021CE6D1C008A85F8 /* ViewController.swift */,
+				E908F5EC21D2E6540011A48A /* ViewModel.swift */,
 				E9936FA221CE6D1C008A85F8 /* Main.storyboard */,
 				E9936FA521CE6D1C008A85F8 /* Assets.xcassets */,
 				E9936FA721CE6D1C008A85F8 /* LaunchScreen.storyboard */,
@@ -138,6 +218,9 @@
 		E9936FBE21CE6E80008A85F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E90B239521E145D200DF1A68 /* IO */,
+				E90B239221E0DCE700DF1A68 /* Materials */,
+				E908F5E921D2B94B0011A48A /* Handlers */,
 				E9936FD721CFC80C008A85F8 /* Textures */,
 				E9936FD421CFC7E7008A85F8 /* Shaders */,
 				E9936FD121CE985D008A85F8 /* Math */,
@@ -153,6 +236,7 @@
 			children = (
 				E9936FC421CE6F49008A85F8 /* MetalKit.framework */,
 				E9936FC221CE6F43008A85F8 /* Metal.framework */,
+				D9AE7E6F73260571710B2C6E /* Pods_SwiftVoxel.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -181,6 +265,9 @@
 				E9936FCF21CE7D2D008A85F8 /* Block.swift */,
 				E9936FDA21CFD225008A85F8 /* World.swift */,
 				E9936FDC21CFD3A3008A85F8 /* BlockUtilities.swift */,
+				E908F5DF21D2844A0011A48A /* Renderable.swift */,
+				E908F5E121D286120011A48A /* ChunkRenderable.swift */,
+				E908F5E721D2B6FC0011A48A /* BlockRenderable.swift */,
 			);
 			path = Geometry;
 			sourceTree = "<group>";
@@ -188,7 +275,11 @@
 		E9936FD121CE985D008A85F8 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				E990082421D6E9E4001BD506 /* AAPLMathUtilities.h */,
+				E990082321D6E9E4001BD506 /* AAPLMathUtilities.m */,
 				E9936FD221CE9872008A85F8 /* MatrixUtilities.swift */,
+				E908F5E321D2AE9C0011A48A /* Vector.swift */,
+				E990082021D6E978001BD506 /* SwiftVoxel-Bridging-Header.h */,
 			);
 			path = Math;
 			sourceTree = "<group>";
@@ -196,7 +287,11 @@
 		E9936FD421CFC7E7008A85F8 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E9936FD521CFC7F8008A85F8 /* Shaders.metal */,
+				E9936FD521CFC7F8008A85F8 /* MainShaders.metal */,
+				E908F5E521D2B2390011A48A /* SelectedCube.metal */,
+				E990082621D6ED8A001BD506 /* ShadowShaders.metal */,
+				E990082821D6EDC7001BD506 /* AAPLShaderTypes.h */,
+				E990082921D6EDF7001BD506 /* AAPLConfig.h */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -216,9 +311,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E9936FB821CE6D1D008A85F8 /* Build configuration list for PBXNativeTarget "SwiftVoxel" */;
 			buildPhases = (
+				B211C28FCF8D635F48A476F2 /* [CP] Check Pods Manifest.lock */,
 				E9936F9721CE6D1C008A85F8 /* Sources */,
 				E9936F9821CE6D1C008A85F8 /* Frameworks */,
 				E9936F9921CE6D1C008A85F8 /* Resources */,
+				D0DD099FD95B03150D81593B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -259,6 +356,7 @@
 				TargetAttributes = {
 					E9936F9A21CE6D1C008A85F8 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
 					};
 					E9936FAE21CE6D1D008A85F8 = {
 						CreatedOnToolsVersion = 10.1;
@@ -292,6 +390,8 @@
 			files = (
 				E907A09821CFFDE8007C4D46 /* grass.png in Resources */,
 				E9936FA921CE6D1C008A85F8 /* LaunchScreen.storyboard in Resources */,
+				E90B239C21E1484200DF1A68 /* character.json in Resources */,
+				E90B239E21E24D0300DF1A68 /* fireplace.json in Resources */,
 				E9936FA621CE6D1C008A85F8 /* Assets.xcassets in Resources */,
 				E9936FA421CE6D1C008A85F8 /* Main.storyboard in Resources */,
 			);
@@ -306,22 +406,84 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		B211C28FCF8D635F48A476F2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftVoxel-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D0DD099FD95B03150D81593B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-SwiftVoxel/Pods-SwiftVoxel-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
+				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwiftVoxel/Pods-SwiftVoxel-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E9936F9721CE6D1C008A85F8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E908F5E821D2B6FC0011A48A /* BlockRenderable.swift in Sources */,
 				E9936FC021CE6E95008A85F8 /* MetalView.swift in Sources */,
+				E90B239721E1466500DF1A68 /* FileImporter.swift in Sources */,
+				E908F5E221D286120011A48A /* ChunkRenderable.swift in Sources */,
 				E9936FD321CE9872008A85F8 /* MatrixUtilities.swift in Sources */,
 				E9936FDD21CFD3A3008A85F8 /* BlockUtilities.swift in Sources */,
 				E9936FD021CE7D2D008A85F8 /* Block.swift in Sources */,
+				E990082521D6E9E4001BD506 /* AAPLMathUtilities.m in Sources */,
 				E9936FA121CE6D1C008A85F8 /* ViewController.swift in Sources */,
+				E90B239421E0DCF900DF1A68 /* Material.swift in Sources */,
 				E9936F9F21CE6D1C008A85F8 /* AppDelegate.swift in Sources */,
+				E908F5ED21D2E6540011A48A /* ViewModel.swift in Sources */,
+				E908F5EB21D2B9680011A48A /* ControllerHandler.swift in Sources */,
+				E908F5E421D2AE9C0011A48A /* Vector.swift in Sources */,
 				E9936FCB21CE7AA4008A85F8 /* Renderer.swift in Sources */,
-				E9936FD621CFC7F8008A85F8 /* Shaders.metal in Sources */,
+				E990082721D6ED8A001BD506 /* ShadowShaders.metal in Sources */,
+				E9936FD621CFC7F8008A85F8 /* MainShaders.metal in Sources */,
 				E9936FDB21CFD225008A85F8 /* World.swift in Sources */,
+				E908F5E621D2B2390011A48A /* SelectedCube.metal in Sources */,
 				E9936FC821CE7703008A85F8 /* MetalViewDelegate.swift in Sources */,
 				E9936FD921CFC81D008A85F8 /* TextureLoader.swift in Sources */,
+				E908F5E021D2844A0011A48A /* Renderable.swift in Sources */,
 				E9936FCE21CE7D0B008A85F8 /* Chunk.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -482,8 +644,10 @@
 		};
 		E9936FB921CE6D1D008A85F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D861970115649C9D83EDF8A5 /* Pods-SwiftVoxel.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y76S6B6ZNR;
 				INFOPLIST_FILE = SwiftVoxel/Info.plist;
@@ -494,6 +658,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.claygarrett.SwiftVoxel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftVoxel/Source/Math/SwiftVoxel-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -501,8 +667,10 @@
 		};
 		E9936FBA21CE6D1D008A85F8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27A162855A5B5D71645B9A0B /* Pods-SwiftVoxel.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y76S6B6ZNR;
 				INFOPLIST_FILE = SwiftVoxel/Info.plist;
@@ -513,6 +681,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.claygarrett.SwiftVoxel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftVoxel/Source/Math/SwiftVoxel-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

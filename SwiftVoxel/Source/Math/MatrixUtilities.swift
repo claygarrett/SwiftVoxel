@@ -28,6 +28,10 @@ class MatrixUtilities: NSObject {
         return Quaternion(w: w, x: x, y: y, z: z);
     }
     
+    static func identity_matrix_4x4()->matrix_float4x4 {
+        return matrix_float4x4([1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1])
+    }
+    
     
     // Function to find
     // cross product of two vector array.

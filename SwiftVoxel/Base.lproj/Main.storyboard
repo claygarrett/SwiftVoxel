@@ -20,23 +20,71 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HeA-WX-JXp" customClass="MetalView" customModule="SwiftVoxel" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BKI-eO-5xv">
+                                        <rect key="frame" x="147.5" y="587" width="80" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="98w-gK-hmO"/>
+                                            <constraint firstAttribute="height" constant="30" id="lsj-34-l6d"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="0.97629494859999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="BKI-eO-5xv" firstAttribute="centerX" secondItem="HeA-WX-JXp" secondAttribute="centerX" id="hCQ-8h-Fpl"/>
+                                    <constraint firstAttribute="bottom" secondItem="BKI-eO-5xv" secondAttribute="bottom" constant="30" id="xS7-b5-DpJ"/>
+                                </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C92-tC-f5N">
+                                <rect key="frame" x="152.5" y="527" width="70" height="40"/>
+                                <gestureRecognizers/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="64Z-AC-jEK"/>
+                                    <constraint firstAttribute="width" constant="70" id="blh-Nl-M1X"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="23"/>
+                                <state key="normal" title="MOVE">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.60982640939999999" blue="0.82745612160000004" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="HeA-WX-JXp" secondAttribute="trailing" id="cmR-iH-hu7"/>
                             <constraint firstItem="HeA-WX-JXp" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="dsK-qb-B2e"/>
                             <constraint firstItem="HeA-WX-JXp" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="pru-Bj-ti2"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="HeA-WX-JXp" secondAttribute="bottom" id="rqj-yS-TTM"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="C92-tC-f5N" secondAttribute="bottom" constant="100" id="tf9-zR-PQV"/>
+                            <constraint firstItem="C92-tC-f5N" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="uFI-aO-aeW"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="B2c-OB-whG" appends="YES" id="HCg-EM-4P0"/>
+                            <outletCollection property="gestureRecognizers" destination="IWC-mn-oIe" appends="YES" id="SSg-1r-vmK"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="metalView" destination="HeA-WX-JXp" id="wjI-Jt-nOr"/>
+                        <outlet property="moveButton" destination="C92-tC-f5N" id="vAd-TJ-ybw"/>
+                        <outlet property="panGestureRecognizer" destination="B2c-OB-whG" id="Q00-Qp-2NO"/>
+                        <outlet property="positionLabel" destination="BKI-eO-5xv" id="eAb-V0-baf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="B2c-OB-whG">
+                    <connections>
+                        <action selector="didPan:" destination="BYZ-38-t0r" id="PmK-pu-Us4"/>
+                    </connections>
+                </panGestureRecognizer>
+                <pinchGestureRecognizer id="IWC-mn-oIe">
+                    <connections>
+                        <action selector="didPinch:" destination="BYZ-38-t0r" id="K6X-Hc-2dU"/>
+                    </connections>
+                </pinchGestureRecognizer>
             </objects>
         </scene>
     </scenes>

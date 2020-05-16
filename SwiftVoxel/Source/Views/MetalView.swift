@@ -18,6 +18,9 @@ class MetalView: UIView {
             return (self.layer as! CAMetalLayer)
         }
     }
+    
+    let passDescriptor = MTLRenderPassDescriptor()
+    
     var drawable:CAMetalDrawable!
     
     private var displayLink:CADisplayLink?
@@ -99,19 +102,19 @@ class MetalView: UIView {
         delegate?.viewIsReadyToDraw(view: self)
     }
     
-    func currentRenderPassDescriptor()->MTLRenderPassDescriptor {
-        let passDescriptor = MTLRenderPassDescriptor()
+    func currentRenderPassDescriptor(clearDepth: Bool)->MTLRenderPassDescriptor {
+        
         let colorAttachement = passDescriptor.colorAttachments[0]
         colorAttachement?.texture = self.drawable.texture
         colorAttachement?.clearColor = MTLClearColor(red: 0, green: 0.8, blue: 1, alpha: 1)
         colorAttachement?.storeAction = .store
-        colorAttachement?.loadAction = .clear
+        colorAttachement?.loadAction = clearDepth ? .clear : .load
         
         let depthAttachment = passDescriptor.depthAttachment
         depthAttachment?.texture = depthTexture
         depthAttachment?.clearDepth = 1.0
-        depthAttachment?.loadAction = .clear
-        depthAttachment?.storeAction = .dontCare
+        depthAttachment?.loadAction = clearDepth ? .clear : .load
+        depthAttachment?.storeAction = .store
         
         return passDescriptor
     }

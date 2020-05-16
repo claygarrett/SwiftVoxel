@@ -14,10 +14,57 @@ let gridSize:Int = CHUNK_SIZE
 class World {
 
     var blocks:[Block] = []
-    var size:(Int, Int, Int)
+    var size:Vector3
     
     init(width: Int, height: Int, depth: Int) {
         size = (width, height, depth)
+    }
+    
+    static func getBlock() -> World {
+        let world = World(width: 1, height: 1, depth: 2)
+        let block = Block(visible: true, type: .grass, color: nil)
+        world.blocks.append(block)
+        world.blocks.append(block)
+
+        return world
+    }
+    
+    static func getFile() -> World {
+        guard let imported:[String: Any] = FileImporter.importFile(filename: "fireplace") as? [String : Any] else {
+            return World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
+        }
+        
+        
+        let world = World(width: CHUNK_SIZE, height: CHUNK_SIZE, depth: CHUNK_SIZE)
+        
+        let modelsArray = (imported["models"] as! [Any])[0] as! [Any]
+        let paletteArray = (imported["palette"] as! [Any])
+        
+        for _ in 0..<CHUNK_SIZE {
+            for _ in 0..<CHUNK_SIZE {
+                for _ in 0..<CHUNK_SIZE {
+                    let block = Block(visible: true, type: .air, color: nil)
+                    world.blocks.append(block)
+                }
+            }
+        }
+        
+        var colors:[float4] = []
+        
+        for palette in paletteArray {
+            let castedPalette = palette as! [String: Int]
+            colors.append(float4(Float(castedPalette["r"]!) / 255.0, Float(castedPalette["g"]!) / 255.0, Float(castedPalette["b"]!) / 255.0, Float(castedPalette["a"]!) / 255.0))
+        }
+        
+        for model in modelsArray {
+            let castedModel = model as! [String: Int]
+            let index = BlockUtilities.get1DIndexFromXYZ(x: castedModel["x"]!, y: castedModel["z"]!, z: CHUNK_SIZE - castedModel["y"]!, chunkSize: (CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE))
+            let block = world.blocks[index]
+            block.color = colors[castedModel["colorIndex"]!]
+            block.type = .trunk
+        }
+        
+        return world
     }
     
     static func getLandscape() -> World {
@@ -25,7 +72,7 @@ class World {
         for _ in 0..<gridSize {
             for _ in 0..<gridSize {
                 for _ in 0..<gridSize {
-                    let block = Block(visible: true, type: .air)
+                    let block = Block(visible: true, type: .air, color: nil)
                     world.blocks.append(block)
                 }
             }
@@ -33,19 +80,19 @@ class World {
         
         for i in 0..<gridSize {
             for k in 0..<gridSize {
-                let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: 0, z: k, chunkSize: CHUNK_SIZE)
+                let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: 0, z: k, chunkSize: (CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE))
                 let block = world.blocks[index]
                 block.type = .grass
             }
         }
         
-        let numTrees = 10
+        let numTrees = 50
         for _ in 0..<numTrees {
             let rangeMin = 5
-            let rangeMax = 25
+            let rangeMax = world.size.x - 5
             let randomX = Int.random(in: rangeMin..<rangeMax)
             let randomY = Int.random(in: rangeMin..<rangeMax)
-            let randomHeight = Int.random(in: 4..<9)
+            let randomHeight = Int.random(in: 4..<20)
             
             world.addTreeAtLocation(x: randomX, z: randomY, height: randomHeight)
         }
@@ -53,10 +100,11 @@ class World {
         
         return world
      }
+    
     func addTreeAtLocation(x:Int, z:Int, height:Int) {
         let width = Int(height / 2)
         for j in 0..<height {
-            let index = BlockUtilities.get1DIndexFromXYZ(x: x, y: j, z: z, chunkSize: gridSize)
+            let index = BlockUtilities.get1DIndexFromXYZ(x: x, y: j, z: z, chunkSize: (gridSize, gridSize, gridSize))
             let block = blocks[index]
             block.type = .trunk
         }
@@ -66,7 +114,7 @@ class World {
         for i in x-radius..<x+radius+1 {
             for j in height..<height+width {
                 for k in z-radius..<z+radius+1 {
-                    let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: j, z: k, chunkSize: gridSize)
+                    let index = BlockUtilities.get1DIndexFromXYZ(x: i, y: j, z: k, chunkSize: (gridSize, gridSize, gridSize))
                     let block = blocks[index]
                     block.type = .leaves
                     block.visible = true
