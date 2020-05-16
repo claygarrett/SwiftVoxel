@@ -27,8 +27,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         viewModel = ViewModel(metalView: metalView)
         bindViewModel()
-        
-        
     }
     
     @IBAction func didPan(_ sender: UIPanGestureRecognizer) {
@@ -46,7 +44,6 @@ class ViewController: UIViewController {
             viewModel.endZoom()
         }
     }
-    
     
     func bindViewModel() {
         // tie our label to the position variable

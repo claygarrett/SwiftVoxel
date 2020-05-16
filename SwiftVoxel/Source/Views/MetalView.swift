@@ -58,10 +58,10 @@ class MetalView: UIView {
         displayLink?.add(to: .current, forMode: .common)
         
     }
-
+    
     override var frame: CGRect {
         set {
-           super.frame = frame
+            super.frame = newValue
             var scale = UIScreen.main.scale
             if let window = self.window {
                 scale = window.screen.scale
@@ -69,7 +69,7 @@ class MetalView: UIView {
             var drawableSize = self.bounds.size;
             drawableSize.width *= scale;
             drawableSize.height *= scale;
-         
+            
             self.metalLayer.drawableSize = drawableSize
             self.initDepthTexture()
         }
@@ -89,12 +89,11 @@ class MetalView: UIView {
         if(depthTexture == nil || depthTexture.width != drawableWidth || depthTexture.height != drawableHeight) {
             let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: drawableWidth, height: drawableHeight, mipmapped: false)
             descriptor.usage = .renderTarget
+            descriptor.storageMode = .private
             
             depthTexture = self.metalLayer.device?.makeTexture(descriptor: descriptor)
         }
     }
-    
-   
     
     @objc private func displayLinkDidFire(displayLink: CADisplayLink) {
         frameDuration = displayLink.duration

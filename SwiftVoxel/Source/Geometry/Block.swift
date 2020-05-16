@@ -1,10 +1,3 @@
-//
-//  Block.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 12/22/18.
-//  Copyright © 2018 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 import simd
@@ -66,7 +59,6 @@ class Block {
             .bottom: [leftBottomFront, rightBottomBack, leftBottomBack, leftBottomFront, rightBottomFront, rightBottomBack]
         ]
         
-        
         self.recalculate()
     }
     
@@ -75,16 +67,13 @@ class Block {
         if(type == .air) {
             return;
         }
-                    
-        
+                            
         for direction in Block.Direction.allCases {
-            let offset = faceNormals[direction]!;
-            
             addFace(position: [0, 0, 0, 0], direction: direction, color: nil)
         }
     }
     
-    /// Adds a face consisting of two triangls for the given position, direction, and color
+    /// Adds a face consisting of two triangles for the given position, direction, and color
     ///
     /// - Parameters:
     ///   - position: The center position of the block who's face we're drawing
@@ -102,8 +91,6 @@ class Block {
         numVerts += UInt32(NUM_SIDES_IN_CUBE)
         
         let (topLeftUV, topRightUV, bottomRightUV, bottomLeftUV) = getUVCorners(forDirection: direction)
-        
-        
         
         let uvs:[Block.Direction: [simd_float2]] = [
             .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
@@ -125,7 +112,6 @@ class Block {
             vertices.append(vertex)
         }
     }
-    
     
     // Configuration
     let gridSpacing:Float = 2.0
@@ -149,9 +135,7 @@ class Block {
         .top: [0, 1, 0],
         .bottom:[0, -1, 0]
     ]
-    
 
-    
     /// Returns the x/y uv positions of the slot this block's texture resides in
     ///
     /// - Returns: The uv position
@@ -164,8 +148,6 @@ class Block {
         let quadrantWidth = Float(slotWidth) / 2.0
         let x = slotWidth * Float(index % numSlotsInRow)
         let y = slotWidth * Float(index / numSlotsInRow) + slotWidth
-        
-        
         let quadrant = getTextureQuadrantForDirection(direction: direction)
         
         var topLeftUV:simd_float2;
@@ -191,11 +173,8 @@ class Block {
             bottomLeftUV = [x, y];
         }
         
-        
         let returnVal = (topLeft: topLeftUV, topRight: topRightUV, bottomRight: bottomRightUV, bottomLeft: bottomLeftUV)
         return returnVal
-        
-        
     }
     
     /// Returns which texture quadrant to use for a given face direction
@@ -212,5 +191,4 @@ class Block {
             return .bottomLeft
         }
     }
-    
 }

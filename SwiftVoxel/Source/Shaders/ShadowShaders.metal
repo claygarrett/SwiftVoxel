@@ -36,7 +36,7 @@ typedef struct ShadowOutput
     float4 position [[position]];
 } ShadowOutput;
 
-vertex ShadowOutput shadow_vertex(device Vertex * positions [[ buffer(0) ]],
+vertex ShadowOutput shadow_vertex(const device Vertex * positions [[ buffer(0) ]],
                                   constant Uniforms   & uniforms  [[ buffer(1) ]],
                                   uint                      vid       [[ vertex_id ]])
 {

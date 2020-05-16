@@ -1,10 +1,3 @@
-//
-//  TextureLoader.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 12/23/18.
-//  Copyright © 2018 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 
@@ -12,7 +5,7 @@ class TextureLoader {
 
     static let sharedInstance = TextureLoader()
     
-    /// Creates a texture from a given image
+    /// Creates a texture from a given image.
     ///
     /// - Parameters:
     ///   - imageName: The name of the image in the main bundle to load
@@ -22,7 +15,7 @@ class TextureLoader {
     func texture2DWithImageNamed(_ imageName: String, mipMapped: Bool, commandQueue: MTLCommandQueue) -> MTLTexture? {
         let image = UIImage(named: imageName)
         
-        // escale early if we can't find the image
+        // escape early if we can't find the image
         guard let i = image else {
             return nil
         }

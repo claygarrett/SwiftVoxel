@@ -5,6 +5,8 @@
 //  Created by Clay Garrett on 12/22/18.
 //  Copyright © 2018 Clay Garrett. All rights reserved.
 //
+import UIKit
+import simd
 
 typealias SVIndex = UInt32;
 
@@ -36,11 +38,6 @@ struct SVUniforms {
     var shadow_mvp_xform_matrix:matrix_float4x4
 }
 
-
-
-
-import UIKit
-import simd
 class Renderer:MetalViewDelegate {
    
     // children
@@ -55,10 +52,10 @@ class Renderer:MetalViewDelegate {
     var metalDevice:MTLDevice!
     var materialPipelines:[Material: MTLRenderPipelineState] = [:]
     
-    // thrading
-    let displaySemaphore:DispatchSemaphore = DispatchSemaphore(value: 3)
+    // threading
+    let displaySemaphore:DispatchSemaphore = DispatchSemaphore(value: 2)
     var bufferIndex:NSInteger = 0
-    let inFlightBufferCount:NSInteger = 3
+    let inFlightBufferCount:NSInteger = 2
     
     // shadows
     var shadowRenderPassDescriptor: MTLRenderPassDescriptor!
@@ -81,7 +78,6 @@ class Renderer:MetalViewDelegate {
     var panningLastX: Float = 0
     var panningLastY: Float = 0
     var zoomingLastAmount: Float = 0
-    
     
     // ui/event
     var handlers:[ControllerHandler] = []
@@ -144,7 +140,7 @@ class Renderer:MetalViewDelegate {
         return renderablePipeline
     }
     
-    /// Create the pipeline state to be used in rendering
+    /// Creates the pipeline state to be used in rendering
     private func makePipelines() {
         // get a new command queue from the device.
         // a command queue keeps a list of command buffers to be executed
@@ -219,8 +215,8 @@ class Renderer:MetalViewDelegate {
         mainCameraProjectionMatrix = MatrixUtilities.matrixFloat4x4Perspective(aspect: aspect, fovy: fov, near: near, far: far)
     }
     
-    /// Uses the given model matrix to create an MVP matrix from the
-    // suns point of view of the renderable that the view matrix belongs to
+    /// Uses the given model matrix to create an MVP matrix (from the
+    /// sun's point of view) of the renderable that the view matrix belongs to
     ///
     /// - Parameter modelMatrix: the model matrix of the renderable the sun is pointing at
     func updateSunMatrices(modelMatrix:matrix_float4x4) {
@@ -238,7 +234,7 @@ class Renderer:MetalViewDelegate {
         shadowViewMatrix = matrix_multiply(shadowViewMatrix, modelMatrix)
    
         // TODO: Make this dyanmic based on phone resolution
-        let aspectRatio:Float = 9.0 / 16.0
+        let aspectRatio:Float = 3.0 / 4.0
         
         // this is temporary while we're just spinning around the scene
         // but we need to determine the size of our ortho shadow box
@@ -292,7 +288,7 @@ class Renderer:MetalViewDelegate {
             shadowEncoder.setVertexBuffer(renderable.uniformBuffer, offset: uniformBufferOffset, index: 1)
             
             // draw our geometry
-            shadowEncoder.drawIndexedPrimitives(type: .triangle, indexCount: renderable.indexBuffer.length / MemoryLayout<SVIndex>.size, indexType: .uint32, indexBuffer: renderable.indexBuffer, indexBufferOffset: 0)
+                shadowEncoder.drawIndexedPrimitives(type: .triangle, indexCount: renderable.indexBuffer.length / MemoryLayout<SVIndex>.size, indexType: .uint32, indexBuffer: renderable.indexBuffer, indexBufferOffset: 0)
             
             // do the encoding
             shadowEncoder.endEncoding()
@@ -362,8 +358,6 @@ class Renderer:MetalViewDelegate {
         
         timePassed += Float(duration)
         
-        
-        
         let directionalCameraUpVector:vector_float3 = [0.0, 1.0, 0.0];
         
         // spin the camera around the center of the scene at a given radius r:
@@ -377,7 +371,7 @@ class Renderer:MetalViewDelegate {
         
         // do the heavy lifting of creating a command buffer and command encoder
         let commandBuffer = commandQueue.makeCommandBuffer()!
-        let uniformBufferOffset:Int = MemoryLayout<SVUniforms>.stride * bufferIndex
+        let uniformBufferOffset:Int = 256 * bufferIndex
         
         // update the renderables models
         renderables.forEach { (renderable) in

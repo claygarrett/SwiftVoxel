@@ -38,7 +38,7 @@ struct Uniforms
     float4x4 shadow_mvp_xform_matrix;
 };
 
-vertex VertexOut vertex_project(device VertexIn *vertices[[buffer(0)]],
+vertex VertexOut vertex_project(const device VertexIn *vertices[[buffer(0)]],
                              constant Uniforms *uniforms [[buffer(1)]],
                              uint vid [[vertex_id]],
                              uint iid [[instance_id]])

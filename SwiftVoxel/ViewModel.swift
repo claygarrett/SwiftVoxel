@@ -15,12 +15,11 @@ import simd
 
 class ViewModel:NSObject {
 
-    var position:Variable<String?>
+    var position:BehaviorRelay<String?>
     var renderer:Renderer
     
     init(metalView: MetalView) {
-        
-        position = Variable("[0, 0, 0]")
+        position = BehaviorRelay(value: "[0, 0, 0]")
         renderer = Renderer(view: metalView)
         
         super.init()
@@ -32,10 +31,8 @@ class ViewModel:NSObject {
     
     func moveRight() {
         renderer.moveBox()
-        position.value = "Tapped"
+        position.accept("Tapped")
     }
-    
-
     
     func endedPan() {
         renderer.endPan()

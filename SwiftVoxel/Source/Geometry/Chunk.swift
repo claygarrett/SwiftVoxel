@@ -1,10 +1,3 @@
-//
-//  Chunk.swift
-//  SwiftVoxel
-//
-//  Created by Clay Garrett on 12/22/18.
-//  Copyright © 2018 Clay Garrett. All rights reserved.
-//
 
 import UIKit
 import simd
@@ -52,7 +45,6 @@ class Chunk: NSObject {
     /// - Parameter blocks: The blocks that should be chunked
     init(blocks:[Block], size: Vector3) {
         self.blocks = blocks
-        
         self.blockSize = size
         
         triangleVertPositions = [
@@ -89,7 +81,8 @@ class Chunk: NSObject {
                         
                         let newIndex = BlockUtilities.get1DIndexFromXYZ(x: newI, y: newJ, z: newK, chunkSize: blockSize)
                         
-                        // if the neighbor block of this face is outside the bounds of this chunk, just add the face
+                        // if the neighbor block of this face is outside the bounds
+                        // of this chunk, just add the face.
                         // TODO: Add checking of neighboring chunks to further optimize drawing
                         if(newI < 0 || newI >= blockSize.x || newJ < 0 || newJ >= blockSize.y || newK < 0 || newK >= blockSize.z) {
                             addFace(block: block, position: [Float(i), Float(j), Float(k), 0], direction: direction, color: block.color)
@@ -109,7 +102,7 @@ class Chunk: NSObject {
         }
     }
     
-    /// Adds a face consisting of two triangls for the given position, direction, and color
+    /// Adds a face consisting of two triangles for the given position, direction, and color
     ///
     /// - Parameters:
     ///   - position: The center position of the block who's face we're drawing
@@ -128,8 +121,6 @@ class Chunk: NSObject {
         
         let (topLeftUV, topRightUV, bottomRightUV, bottomLeftUV) = block.getUVCorners(forDirection: direction)
         
-        
-
         let uvs:[Block.Direction: [simd_float2]] = [
             .north: [bottomLeftUV, topRightUV, bottomRightUV, topLeftUV, topRightUV, bottomLeftUV],
             .east: [topLeftUV, bottomRightUV, bottomLeftUV, topLeftUV, topRightUV, bottomRightUV],
@@ -151,8 +142,4 @@ class Chunk: NSObject {
             vertices.append(vertex)
         }
     }
-    
-    
-    
-
 }
